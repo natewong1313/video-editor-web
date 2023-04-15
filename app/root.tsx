@@ -1,10 +1,21 @@
-import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react"
+import {
+  Links,
+  LiveReload,
+  Meta,
+  Outlet,
+  Scripts,
+  ScrollRestoration,
+  useLoaderData,
+  useRevalidator,
+} from "@remix-run/react"
 import { useState, useEffect } from "react"
-import { useLoaderData, useRevalidator } from "@remix-run/react"
-import type { LoaderArgs } from "@vercel/remix"
+import type { LoaderArgs, LinksFunction } from "@vercel/remix"
 import { json } from "@vercel/remix"
 import { createBrowserClient, createServerClient } from "@supabase/auth-helpers-remix"
 import type { Database } from "@/lib/database.types"
+import stylesheet from "../public/tailwind.css"
+
+export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }]
 
 export const loader = async ({ request }: LoaderArgs) => {
   const env = {
