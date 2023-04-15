@@ -1,8 +1,8 @@
 import { Links, LiveReload, Meta, Outlet, Scripts, ScrollRestoration } from "@remix-run/react"
 import { useState, useEffect } from "react"
 import { useLoaderData, useRevalidator } from "@remix-run/react"
-import type { LoaderArgs } from "@remix-run/node"
-import { json } from "@remix-run/node"
+import type { LoaderArgs } from "@vercel/remix"
+import { json } from "@vercel/remix"
 import { createBrowserClient, createServerClient } from "@supabase/auth-helpers-remix"
 import type { Database } from "@/lib/database.types"
 

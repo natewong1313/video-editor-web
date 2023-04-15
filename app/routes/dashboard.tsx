@@ -1,8 +1,7 @@
 import { useLoaderData, useOutletContext } from "@remix-run/react"
-import { createServerClient, SupabaseClient } from "@supabase/auth-helpers-remix"
-import { json } from "@remix-run/node"
-import type { LoaderArgs } from "@remix-run/node"
-import type { Database } from "@/lib/database.types"
+import { createServerClient } from "@supabase/auth-helpers-remix"
+import { json } from "@vercel/remix"
+import type { LoaderArgs } from "@vercel/remix"
 import type { OutletSupabaseClient } from "@/lib/supabase.types"
 
 export const loader = async ({ request }: LoaderArgs) => {
