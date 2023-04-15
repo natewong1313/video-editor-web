@@ -4,6 +4,8 @@ import { json } from "@vercel/remix"
 import type { LoaderArgs } from "@vercel/remix"
 import type { OutletSupabaseClient } from "@/lib/supabase.types"
 
+export const config = { runtime: "edge" }
+
 export const loader = async ({ request }: LoaderArgs) => {
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL || "",
