@@ -1,4 +1,4 @@
-import { json } from "@remix-run/node"
+import { json } from "@vercel/remix"
 
 export const badRequest = <T>(data: T, headers: Headers) => {
   return json(data, { status: 400, headers })
