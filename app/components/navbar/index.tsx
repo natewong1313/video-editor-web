@@ -5,7 +5,7 @@ type Props = {
 }
 export default function Navbar({ email }: Props) {
   return (
-    <div className="px-12 justify-between flex items-center w-full bg-black ring-1 ring-zinc-400/20">
+    <div className="px-16 lg:px-24 justify-between flex items-center w-full bg-black ring-1 ring-zinc-400/20">
       <div className="flex text-sky-500 items-center">
         <Clapperboard className="mr-2 h-7 w-7" />
         <h1 className="font-medium text-xl">video-editor</h1>

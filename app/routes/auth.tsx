@@ -1,6 +1,6 @@
 import { Outlet } from "@remix-run/react"
-import type { LoaderArgs } from "@vercel/remix"
 import { createServerClient } from "@supabase/auth-helpers-remix"
+import type { LoaderArgs } from "@vercel/remix"
 import { redirect } from "@vercel/remix"
 
 export async function loader({ request }: LoaderArgs) {
@@ -14,7 +14,7 @@ export async function loader({ request }: LoaderArgs) {
     data: { user },
   } = await supabaseClient.auth.getUser()
   if (user) {
-    return redirect("/projects", {
+    return redirect("/", {
       headers: response.headers,
     })
   }

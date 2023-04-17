@@ -40,7 +40,7 @@ export async function action({ request }: ActionArgs) {
     return unauthorizedRequest({ error: error.message, fields, fieldErrors }, response.headers)
   }
 
-  return redirect("/projects", {
+  return redirect("/", {
     headers: response.headers,
   })
 }

@@ -53,7 +53,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  return redirect("/projects", {
+  return redirect("/", {
     headers: response.headers,
   })
 }
