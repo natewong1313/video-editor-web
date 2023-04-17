@@ -53,7 +53,7 @@ export async function action({ request }: ActionArgs) {
     )
   }
 
-  return redirect("/", {
+  return redirect("/projects", {
     headers: response.headers,
   })
 }
@@ -63,7 +63,7 @@ export default function SignupPage() {
   const actionData = useActionData<typeof action>()
 
   return (
-    <div className="flex h-full bg-black">
+    <div className="flex h-full bg-zinc-950">
       <div className="m-auto text-white bg-zinc-900 w-96 border border-zinc-700 rounded-lg p-6">
         <h1 className="text-xl font-bold">Create an Account</h1>
         <h2 className="text-zinc-400">To continue to video-editor</h2>
@@ -95,12 +95,9 @@ export default function SignupPage() {
             defaultValue={actionData?.fields.confirmPassword}
             errorMessage={actionData?.fieldErrors?.confirmPassword}
           />
-          <Button
-            text={navigation.state !== "idle" ? "Submitting..." : "Create Account"}
-            className="mt-3"
-            type="submit"
-            disabled={navigation.state !== "idle"}
-          />
+          <Button className="mt-3 h-12" type="submit" disabled={navigation.state !== "idle"}>
+            {navigation.state !== "idle" ? "Submitting..." : "Create Account"}
+          </Button>
         </Form>
         <div className="flex-col flex">
           <span className="text-red-500 text-sm -mt-2 mb-1">{actionData?.error}</span>

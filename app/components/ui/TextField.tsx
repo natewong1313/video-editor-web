@@ -5,8 +5,9 @@ type Props = {
   label?: string
   type?: string
   name?: string
+  placeholder?: string
   defaultValue?: string
-  autoComplete: string
+  autoComplete?: string
   className?: string
   errorMessage?: string
 }
@@ -14,14 +15,15 @@ type Props = {
 export default function StyledTextField(props: Props) {
   return (
     <TextField {...props}>
-      <Label className="text-sm">{props.label}</Label>
+      <Label className="text-sm text-white">{props.label}</Label>
       <Input
         className={clsx(
-          "w-full mt-1 flex h-10 rounded-md border bg-transparent py-2 px-3 text-sm font-medium placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-offset-2 border-zinc-700 text-slate-50  focus:ring-offset-slate-900",
+          "w-full mt-1 flex h-10 rounded-md border bg-transparent py-2 px-3 text-sm font-medium placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-offset-2 border-zinc-700 text-slate-50  focus:ring-offset-slate-900",
           props.className,
         )}
         name={props.name}
         type={props.type}
+        placeholder={props.placeholder}
         defaultValue={props.defaultValue}
         autoComplete={props.autoComplete}
       />

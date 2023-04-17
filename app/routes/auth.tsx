@@ -14,7 +14,7 @@ export async function loader({ request }: LoaderArgs) {
     data: { user },
   } = await supabaseClient.auth.getUser()
   if (user) {
-    return redirect("/", {
+    return redirect("/projects", {
       headers: response.headers,
     })
   }
