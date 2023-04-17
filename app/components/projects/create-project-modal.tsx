@@ -1,18 +1,20 @@
-import { Fragment } from "react"
 import { Dialog, Transition } from "@headlessui/react"
-import { Cancel, AddMediaVideo } from "iconoir-react"
-import Button from "@/components/ui/Button"
-import TextField from "@/components/ui/TextField"
+import { PlusSquare, X } from "lucide-react"
+import { Fragment } from "react"
+import { Button as RAButton } from "react-aria-components"
 
 type Props = {
+  children: React.ReactNode
   isOpen: boolean
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
 }
 export default function CreateProjectModal(props: Props) {
-  console.log(props.isOpen)
+  const closeModal = () => {
+    props.setIsOpen(false)
+  }
   return (
     <Transition.Root show={props.isOpen} as={Fragment}>
-      <Dialog as="div" className="relative z-10" onClose={() => props.setIsOpen(false)}>
+      <Dialog as="div" className="relative z-10" onClose={closeModal}>
         <Transition.Child
           as={Fragment}
           enter="ease-out duration-300"
@@ -39,32 +41,23 @@ export default function CreateProjectModal(props: Props) {
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-400/20 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
                   <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-                    <button
+                    <RAButton
                       type="button"
-                      className="rounded-full text-zinc-500 focus:outline-none focus:ring-0"
-                      onClick={() => props.setIsOpen(false)}
+                      className="rounded-full text-zinc-500 data-[hovered]:text-white focus:outline-none focus:ring-0"
+                      onPress={closeModal}
                     >
-                      <Cancel className="h-7 w-7" />
-                    </button>
+                      <X className="h-7 w-7" />
+                    </RAButton>
                   </div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sky-700/50">
-                    <AddMediaVideo className="text-sky-500" />
+                    <PlusSquare className="text-sky-500" />
                   </div>
                   <div className="mt-4 text-center">
                     <Dialog.Title as="h1" className="text-base font-medium leading-6 text-white">
                       Create a New Project
                     </Dialog.Title>
                     <p className="text-sm mt-1 text-gray-500">Enter the name of your project below.</p>
-                    <form>
-                      <div className="mt-4">
-                        <TextField placeholder="Enter project name" className="text-center" />
-                      </div>
-                      <div className="mt-3">
-                        <Button className="w-full h-10 py-6" type="submit">
-                          Create New
-                        </Button>
-                      </div>
-                    </form>
+                    {props.children}
                   </div>
                 </div>
               </Dialog.Panel>
