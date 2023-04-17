@@ -10,6 +10,7 @@ import type { ActionArgs, LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
 import { Plus, PlusSquare } from "lucide-react"
 import { useState } from "react"
+import { Button as RAButton } from "react-aria-components"
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Projects" }]
@@ -72,12 +73,15 @@ export default function Projects() {
             </div>
           </div>
           <div className="grid grid-flow-col mt-4 gap-4 grid-cols-4">
-            <div className="bg-black cursor-pointer w-80 h-44 rounded-lg border border-zinc-800 hover:border-zinc-700">
+            <RAButton
+              onPress={() => setIsCreateNewProjectModalOpen(true)}
+              className="bg-black cursor-pointer w-90 h-52 rounded-lg border border-zinc-800 data-[hovered]:border-zinc-700 data-[pressed]:border-sky-500 focus:outline-none"
+            >
               <div className="flex justify-center text-center h-full items-center flex-col text-zinc-500">
                 <PlusSquare className="text-zinc-400 h-12 mb-1 w-12" />
                 <h1 className="text-lg">Add a New Project</h1>
               </div>
-            </div>
+            </RAButton>
           </div>
         </div>
         <CreateProjectModal isOpen={isCreateNewProjectModalOpen} setIsOpen={setIsCreateNewProjectModalOpen}>
