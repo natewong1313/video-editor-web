@@ -5,7 +5,8 @@
     "build": "remix build",
     "dev": "remix dev",
     "typecheck": "tsc",
-    "lint": "eslint --fix ."
+    "lint": "eslint --fix .",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@headlessui/react": "^1.7.14",
