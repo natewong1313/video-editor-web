@@ -13,7 +13,8 @@ import type { LoaderArgs, LinksFunction } from "@vercel/remix"
 import { json } from "@vercel/remix"
 import { createBrowserClient, createServerClient } from "@supabase/auth-helpers-remix"
 import type { Database } from "@/lib/database.types"
-import stylesheet from "../public/tailwind.css"
+import stylesheet from "@/static/styles/tailwind.css"
+import { SSRProvider } from "react-bootstrap"
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }]
 
@@ -68,19 +69,21 @@ export default function App() {
   }, [serverAccessToken, supabase, revalidate])
 
   return (
-    <html lang="en">
-      <head>
-        <meta charSet="utf-8" />
-        <meta name="viewport" content="width=device-width,initial-scale=1" />
-        <Meta />
-        <Links />
-      </head>
-      <body>
-        <Outlet context={{ supabase }} />
-        <ScrollRestoration />
-        <Scripts />
-        <LiveReload />
-      </body>
-    </html>
+    <SSRProvider>
+      <html lang="en">
+        <head>
+          <meta charSet="utf-8" />
+          <meta name="viewport" content="width=device-width,initial-scale=1" />
+          <Meta />
+          <Links />
+        </head>
+        <body className="h-screen font-chivo-mono">
+          <Outlet context={{ supabase }} />
+          <ScrollRestoration />
+          <Scripts />
+          <LiveReload />
+        </body>
+      </html>
+    </SSRProvider>
   )
 }
