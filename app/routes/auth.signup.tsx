@@ -95,12 +95,9 @@ export default function SignupPage() {
             defaultValue={actionData?.fields.confirmPassword}
             errorMessage={actionData?.fieldErrors?.confirmPassword}
           />
-          <Button
-            text={navigation.state !== "idle" ? "Submitting..." : "Create Account"}
-            className="mt-3"
-            type="submit"
-            disabled={navigation.state !== "idle"}
-          />
+          <Button className="mt-3 h-12" type="submit" disabled={navigation.state !== "idle"}>
+            {navigation.state !== "idle" ? "Submitting..." : "Create Account"}
+          </Button>
         </Form>
         <div className="flex-col flex">
           <span className="text-red-500 text-sm -mt-2 mb-1">{actionData?.error}</span>

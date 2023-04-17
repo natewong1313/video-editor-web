@@ -8,6 +8,7 @@
     "lint": "eslint --fix ."
   },
   "dependencies": {
+    "@headlessui/react": "^1.7.14",
     "@remix-run/node": "^1.15.0",
     "@remix-run/react": "^1.15.0",
     "@remix-run/vercel": "^1.15.0",
@@ -25,6 +26,8 @@
     "react-bootstrap": "^2.7.4",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.43.9",
+    "react-modal": "^3.16.1",
+    "tailwind-merge": "^1.12.0",
     "zod": "^3.21.4"
   },
   "devDependencies": {
