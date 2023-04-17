@@ -1,12 +1,12 @@
-import TextField from "@/components/ui/TextField"
-import type { V2_MetaFunction } from "@remix-run/react"
 import Button from "@/components/ui/Button"
-import { Link, useNavigation, useActionData, Form } from "@remix-run/react"
-import type { ActionArgs } from "@vercel/remix"
-import { z } from "zod"
-import { createServerClient } from "@supabase/auth-helpers-remix"
+import TextField from "@/components/ui/TextField"
 import { badRequest, unauthorizedRequest } from "@/utils/request.server"
+import type { V2_MetaFunction } from "@remix-run/react"
+import { Form, Link, useActionData, useNavigation } from "@remix-run/react"
+import { createServerClient } from "@supabase/auth-helpers-remix"
+import type { ActionArgs } from "@vercel/remix"
 import { redirect } from "@vercel/remix"
+import { z } from "zod"
 
 export const meta: V2_MetaFunction = () => {
   return [{ title: "Sign up" }]
@@ -62,6 +62,7 @@ export default function SignupPage() {
   const navigation = useNavigation()
   const actionData = useActionData<typeof action>()
 
+  const isLoading = navigation.state !== "idle" && navigation.location.pathname === "/auth/signup"
   return (
     <div className="flex h-full bg-zinc-950">
       <div className="m-auto text-white bg-zinc-900 w-96 border border-zinc-700 rounded-lg p-6">
@@ -95,15 +96,15 @@ export default function SignupPage() {
             defaultValue={actionData?.fields.confirmPassword}
             errorMessage={actionData?.fieldErrors?.confirmPassword}
           />
-          <Button className="mt-3 h-12" type="submit" disabled={navigation.state !== "idle"}>
-            {navigation.state !== "idle" ? "Submitting..." : "Create Account"}
+          <Button className="mt-3 h-12" type="submit" disabled={isLoading}>
+            {isLoading ? "Submitting..." : "Create Account"}
           </Button>
         </Form>
         <div className="flex-col flex">
           <span className="text-red-500 text-sm -mt-2 mb-1">{actionData?.error}</span>
           <span className="text-sm text-gray-500">
             Already have an account?{" "}
-            <Link className="text-sky-500 hover:underline" to="/dashboard">
+            <Link className="text-sky-500 hover:underline" to="/auth/signin">
               Click here
             </Link>{" "}
             to sign in
