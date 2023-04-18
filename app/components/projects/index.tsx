@@ -32,15 +32,15 @@ export default function Projects({ projects, setIsCreateNewProjectModalOpen }: P
           <h1 className="text-lg">Add a New Project</h1>
         </div>
       </RAButton>
-      {projects.map((project) => (
-        <div
+      {projects?.map((project) => (
+        <RAButton
           key={project.id}
           className="bg-black cursor-pointer w-80 h-52 rounded-lg border border-zinc-800 data-[hovered]:border-zinc-700 data-[pressed]:border-sky-500 focus:outline-none"
         >
           <div className="flex justify-center text-center h-full items-center flex-col text-zinc-500">
             <h1 className="text-lg">{project.name}</h1>
           </div>
-        </div>
+        </RAButton>
       ))}
     </div>
   )
