@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button"
 import TextField from "@/components/ui/TextField"
 import type { Projects as DBProjects } from "@/lib/supabase.types"
 import { badRequest } from "@/utils/request.server"
-import { getAuthenticatedUser } from "@/utils/supabase"
+import { getAuthenticatedUser, getSupabaseClient } from "@/utils/supabase"
 import type { V2_MetaFunction } from "@remix-run/react"
 import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react"
 import type { ActionArgs, LoaderArgs } from "@vercel/remix"
@@ -27,7 +27,7 @@ export async function loader({ request }: LoaderArgs) {
       headers: response.headers,
     })
   }
-  const { data } = await supabaseClient.from("projects").select()
+  const { data } = await supabaseClient.from("projects").select().order("updated_at", { ascending: false })
 
   return json(
     { user, projects: data as DBProjects[] },
@@ -45,7 +45,29 @@ export async function action({ request }: ActionArgs) {
   if (projectName.length === 0) {
     return badRequest({ error: "Please enter a project name" }, response.headers)
   }
-  return json({ success: true, error: null })
+  const { user, supabaseClient } = await getAuthenticatedUser(request, response)
+  if (!user) {
+    return redirect("/auth/signin", {
+      headers: response.headers,
+    })
+  }
+  const { data, error } = await supabaseClient
+    .from("projects")
+    .insert([{ name: projectName, user_id: user.id }])
+    .select("id")
+    .single()
+  if (error) {
+    let errorMsg = error.message
+    if (errorMsg === 'duplicate key value violates unique constraint "projects_name_key"') {
+      errorMsg = "A project with this name already exists"
+    }
+    return badRequest({ error: errorMsg }, response.headers)
+  }
+  console.log(data)
+  return redirect(`/projects/${data.id}`, {
+    headers: response.headers,
+  })
+  // return json({ success: true, error: null })
 }
 
 export default function Index() {

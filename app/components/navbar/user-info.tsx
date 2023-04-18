@@ -1,4 +1,6 @@
-import { Link } from "@remix-run/react"
+import type { Database } from "@/lib/database.types"
+import { Link, useOutletContext } from "@remix-run/react"
+import type { SupabaseClient } from "@supabase/auth-helpers-remix"
 import { User } from "lucide-react"
 import { useState } from "react"
 import { Button, Dialog, DialogTrigger, Link as RALink, Popover } from "react-aria-components"
@@ -8,7 +10,11 @@ type Props = {
   email: string
 }
 export default function UserInfo({ email }: Props) {
+  const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
   const [confirmSignoutModalOpen, setConfirmSignoutModalOpen] = useState(false)
+  const onSignOut = async () => {
+    await supabase.auth.signOut()
+  }
   return (
     <>
       <DialogTrigger>
@@ -33,7 +39,11 @@ export default function UserInfo({ email }: Props) {
           </Dialog>
         </Popover>
       </DialogTrigger>
-      <ConfirmSignoutModal isOpen={confirmSignoutModalOpen} setIsOpen={setConfirmSignoutModalOpen}>
+      <ConfirmSignoutModal
+        isOpen={confirmSignoutModalOpen}
+        setIsOpen={setConfirmSignoutModalOpen}
+        onSignOut={onSignOut}
+      >
         hi
       </ConfirmSignoutModal>
     </>

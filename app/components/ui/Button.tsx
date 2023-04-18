@@ -1,5 +1,5 @@
-import { Button as Btn } from "react-aria-components"
 import { cn } from "@/utils/cn"
+import { Button as Btn } from "react-aria-components"
 type Props = {
   children?: React.ReactNode
   className?: string
@@ -11,7 +11,7 @@ export default function Button({ children, className, disabled = false, type, on
   return (
     <Btn
       className={cn(
-        "bg-sky-500 data-[hovered]:bg-sky-600 rounded-md flex items-center justify-center text-white font-medium focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900",
+        "bg-sky-500 data-[hovered]:bg-sky-600 rounded-md flex items-center justify-center text-white font-medium disabled:bg-sky-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900",
         className,
       )}
       onPress={onPress}

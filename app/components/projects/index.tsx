@@ -1,9 +1,5 @@
 import type { Database } from "@/lib/database.types"
-import type { OutletSupabaseClient } from "@/lib/supabase.types"
-import { useOutletContext } from "@remix-run/react"
-import type { User } from "@supabase/auth-helpers-remix"
 import { PlusSquare } from "lucide-react"
-import { useEffect, useState } from "react"
 import { Button as RAButton } from "react-aria-components"
 type Props = {
   projects: Database["public"]["Tables"]["projects"]["Row"][]
@@ -11,16 +7,6 @@ type Props = {
 }
 
 export default function Projects({ projects, setIsCreateNewProjectModalOpen }: Props) {
-  console.log(projects)
-  // const [projects, setProjects] = useState<Database["public"]["Tables"]["project"]["Row"][]>([
-  //   {
-  //     id: 1,
-  //     inserted_at: "test",
-  //     name: "test",
-  //     updated_at: "test",
-  //     user_id: "test",
-  //   },
-  // ])
   return (
     <div className="flex mt-4 gap-4 flex-wrap">
       <RAButton
@@ -37,8 +23,14 @@ export default function Projects({ projects, setIsCreateNewProjectModalOpen }: P
           key={project.id}
           className="bg-black cursor-pointer w-80 h-52 rounded-lg border border-zinc-800 data-[hovered]:border-zinc-700 data-[pressed]:border-sky-500 focus:outline-none"
         >
-          <div className="flex justify-center text-center h-full items-center flex-col text-zinc-500">
-            <h1 className="text-lg">{project.name}</h1>
+          <div className="flex justify-start h-full p-4">
+            <div className="mt-auto text-left">
+              <h1 className="text-lg text-zinc-200">{project.name}</h1>
+              <p className="text-sm text-zinc-500">
+                Last updated at:
+                {project.updated_at ? new Date(project.updated_at).toLocaleString() : "Never"}
+              </p>
+            </div>
           </div>
         </RAButton>
       ))}
