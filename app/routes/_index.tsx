@@ -3,10 +3,11 @@ import Projects from "@/components/projects"
 import CreateProjectModal from "@/components/projects/create-project-modal"
 import Button from "@/components/ui/Button"
 import TextField from "@/components/ui/TextField"
+import type { Projects as DBProjects } from "@/lib/supabase.types"
 import { badRequest } from "@/utils/request.server"
+import { getAuthenticatedUser } from "@/utils/supabase"
 import type { V2_MetaFunction } from "@remix-run/react"
 import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react"
-import { createServerClient } from "@supabase/auth-helpers-remix"
 import type { ActionArgs, LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
 import { Plus } from "lucide-react"
@@ -20,21 +21,20 @@ export const meta: V2_MetaFunction = () => {
 export async function loader({ request }: LoaderArgs) {
   const response = new Response()
 
-  const supabaseClient = createServerClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_ANON_KEY || "", {
-    request,
-    response,
-  })
-  const {
-    data: { user },
-  } = await supabaseClient.auth.getUser()
+  const { user, supabaseClient } = await getAuthenticatedUser(request, response)
   if (!user) {
     return redirect("/auth/signin", {
       headers: response.headers,
     })
   }
-  return json(user, {
-    headers: response.headers,
-  })
+  const { data } = await supabaseClient.from("projects").select()
+
+  return json(
+    { user, projects: data as DBProjects[] },
+    {
+      headers: response.headers,
+    },
+  )
 }
 
 export async function action({ request }: ActionArgs) {
@@ -49,7 +49,7 @@ export async function action({ request }: ActionArgs) {
 }
 
 export default function Index() {
-  const user = useLoaderData<typeof loader>()
+  const { user, projects } = useLoaderData<typeof loader>()
   const actionData = useActionData<typeof action>()
   const [isCreateNewProjectModalOpen, setIsCreateNewProjectModalOpen] = useState(false)
   const navigation = useNavigation()
@@ -72,7 +72,7 @@ export default function Index() {
             </div>
           </div>
         </div>
-        <Projects setIsCreateNewProjectModalOpen={setIsCreateNewProjectModalOpen} user={user} />
+        <Projects setIsCreateNewProjectModalOpen={setIsCreateNewProjectModalOpen} projects={projects} />
       </div>
       <CreateProjectModal isOpen={isCreateNewProjectModalOpen} setIsOpen={setIsCreateNewProjectModalOpen}>
         <Form method="post">
