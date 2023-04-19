@@ -1,27 +1,41 @@
 import type { Database } from "@/lib/database.types"
 import { cn } from "@/utils/cn"
 import mediaValidator from "@/utils/media-validator"
-import { useOutletContext } from "@remix-run/react"
+import { useNavigate, useOutletContext } from "@remix-run/react"
 import type { SupabaseClient } from "@supabase/auth-helpers-remix"
+import type { FileObject } from "@supabase/storage-js"
 import { FileWarning, Plus, Search } from "lucide-react"
 import { useCallback } from "react"
 import { Button } from "react-aria-components"
 import { useDropzone } from "react-dropzone"
 
-export default function MediaLibrary() {
+type Props = {
+  projectId: string
+  media: FileObject[]
+}
+
+export default function MediaLibrary({ projectId, media }: Props) {
+  const navigate = useNavigate()
   const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      navigate("/auth/signin")
+    }
     for (const file of acceptedFiles) {
       const result = mediaValidator(file)
       if (!result.valid) {
         console.log(result.message)
         continue
       }
-      const { data, error } = await supabase.storage.from("media").upload("private/" + file.name, file)
+      const { data, error } = await supabase.storage.from("media").upload(`${user?.id}/${projectId}/${file.name}`, file)
       console.log(error)
       console.log(data)
     }
   }, [])
+  const hasMedia = media.length > 0
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
     accept: {
@@ -29,7 +43,7 @@ export default function MediaLibrary() {
       "video/*": [".mp4"],
       "audio/*": [".mp3"],
     },
-    noClick: true,
+    noClick: hasMedia,
   })
   return (
     <div
@@ -53,13 +67,15 @@ export default function MediaLibrary() {
       </div>
       <div>
         <div className="mt-4">
-          <div className="flex h-64 flex-col items-center justify-center">
-            <div className="text-4xl text-zinc-500">
-              <FileWarning className="h-12 w-12" />
+          {hasMedia ? null : (
+            <div className="flex h-64 flex-col items-center justify-center">
+              <div className="text-4xl text-zinc-500">
+                <FileWarning className="h-12 w-12" />
+              </div>
+              <div className="mt-2 text-lg text-zinc-300">No media found</div>
+              <div className="mt-2 text-sm text-zinc-500">Drag and drop files to upload</div>
             </div>
-            <div className="mt-2 text-lg text-zinc-300">No media found</div>
-            <div className="mt-2 text-sm text-zinc-500">Drag and drop files to upload</div>
-          </div>
+          )}
         </div>
       </div>
     </div>

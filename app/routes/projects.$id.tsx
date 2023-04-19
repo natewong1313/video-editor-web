@@ -1,14 +1,14 @@
 import MediaLibrary from "@/components/project/media-library"
 import Navbar from "@/components/project/navbar"
 import VideoItem from "@/components/project/timeline/video-item"
-import { getAuthenticatedUser } from "@/utils/supabase"
+import { getAuthenticatedUser, getMediaFromStorage, getProjectFromDb } from "@/utils/supabase"
 import type { V2_MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import type { LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
 import type { TimelineEffect, TimelineRow } from "@xzdarcy/react-timeline-editor"
 import { Timeline } from "@xzdarcy/react-timeline-editor"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export const mockEffect: Record<string, TimelineEffect> = {
   video: {
@@ -39,21 +39,28 @@ export const mockData: TimelineRow[] = [
 
 export async function loader({ params, request }: LoaderArgs) {
   const response = new Response()
-  const projectId = params.id
+  const projectId = params.id as string
   const { user, supabaseClient } = await getAuthenticatedUser(request, response)
   if (!user) {
     return redirect("/auth/signin", {
       headers: response.headers,
     })
   }
-  const { data, error } = await supabaseClient.from("projects").select().eq("id", projectId).single()
-  if (error) {
+  const getProjectResult = await getProjectFromDb(supabaseClient, projectId)
+  if (getProjectResult.error) {
+    return redirect("/", {
+      headers: response.headers,
+    })
+  }
+  const getMediaResult = await getMediaFromStorage(supabaseClient, projectId, user.id)
+  if (getMediaResult.error) {
+    console.log(getMediaResult.error)
     return redirect("/", {
       headers: response.headers,
     })
   }
 
-  return json({ project: data }, { headers: response.headers })
+  return json({ project: getProjectResult.data, media: getMediaResult.data }, { headers: response.headers })
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
@@ -61,7 +68,7 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 }
 
 export default function Project() {
-  const { project } = useLoaderData<typeof loader>()
+  const { project, media } = useLoaderData<typeof loader>()
   const [data, setData] = useState(mockData)
   // useEffect(() => {
   //   console.log(data)
@@ -72,7 +79,7 @@ export default function Project() {
       <div className="flex h-full flex-col">
         <Navbar projectName={project.name} />
         <div className="h-full flex-1">
-          <MediaLibrary />
+          <MediaLibrary projectId={project.id} media={media} />
         </div>
         <div className="h-[20rem] border-t border-zinc-700">
           <Timeline

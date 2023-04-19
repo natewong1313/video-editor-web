@@ -1,5 +1,6 @@
-import type { User } from "@supabase/auth-helpers-remix"
-import { createServerClient, SupabaseClient } from "@supabase/auth-helpers-remix"
+import type { SupabaseClient } from "@supabase/auth-helpers-remix"
+import { createServerClient } from "@supabase/auth-helpers-remix"
+import type { FileObject } from "@supabase/storage-js"
 
 export async function getAuthenticatedUser(request: Request, response: Response) {
   const supabaseClient = createServerClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_ANON_KEY || "", {
@@ -35,6 +36,26 @@ export async function addProjectToDb(supabaseClient: SupabaseClient, projectName
   return { data }
 }
 
-// export async function checkIfUserFolderExists() {
+export async function getProjectFromDb(supabaseClient: SupabaseClient, projectId: string) {
+  const { data, error } = await supabaseClient.from("projects").select().eq("id", projectId).single()
+  if (error) {
+    return { error }
+  }
+  return { data }
+}
 
-// }
+export async function getMediaFromStorage(supabaseClient: SupabaseClient, projectId: string, userId: string) {
+  const { data, error } = await supabaseClient.storage.from("media").list(`${userId}/${projectId}`)
+  if (error) {
+    return { error }
+  }
+  const filteredMedia: FileObject[] = []
+  // get rid of item in data
+  for (const media of data) {
+    if (media.name !== ".emptyFolderPlaceholder") {
+      filteredMedia.push(media)
+    }
+  }
+
+  return { data: filteredMedia }
+}
