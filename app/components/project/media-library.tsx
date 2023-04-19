@@ -8,14 +8,15 @@ export default function MediaLibrary() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log(acceptedFiles)
   }, [])
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({ onDrop })
+  const { onClick, ...rootProps } = getRootProps()
   return (
     <div
       className={cn(
         "h-full w-96 border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
         isDragActive ? "border border-dashed border-sky-500" : null,
       )}
-      {...getRootProps()}
+      {...rootProps}
     >
       <input {...getInputProps()} />
       <div className="flex items-center justify-between">
@@ -24,7 +25,7 @@ export default function MediaLibrary() {
           <IconBtn onPress={() => console.log()}>
             <Search className="h-4 w-4" />
           </IconBtn>
-          <IconBtn onPress={() => console.log()}>
+          <IconBtn onPress={open}>
             <Plus className="h-4 w-4" />
           </IconBtn>
         </div>
