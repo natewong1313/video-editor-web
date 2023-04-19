@@ -5,7 +5,7 @@ import Button from "@/components/ui/Button"
 import TextField from "@/components/ui/TextField"
 import type { Projects as DBProjects } from "@/lib/supabase.types"
 import { badRequest } from "@/utils/request.server"
-import { getAuthenticatedUser } from "@/utils/supabase"
+import { addProjectToDb, getAuthenticatedUser } from "@/utils/supabase"
 import type { V2_MetaFunction } from "@remix-run/react"
 import { Form, useActionData, useLoaderData, useNavigation } from "@remix-run/react"
 import type { ActionArgs, LoaderArgs } from "@vercel/remix"
@@ -51,23 +51,15 @@ export async function action({ request }: ActionArgs) {
       headers: response.headers,
     })
   }
-  const { data, error } = await supabaseClient
-    .from("projects")
-    .insert([{ name: projectName, user_id: user.id }])
-    .select("id")
-    .single()
-  if (error) {
-    let errorMsg = error.message
-    if (errorMsg === 'duplicate key value violates unique constraint "projects_name_key"') {
-      errorMsg = "A project with this name already exists"
-    }
-    return badRequest({ error: errorMsg }, response.headers)
+  const result = await addProjectToDb(supabaseClient, projectName, user.id)
+  if (result.error) {
+    return badRequest({ error: result.error.message }, response.headers)
   }
-  console.log(data)
-  return redirect(`/projects/${data.id}`, {
+  const projectId = result.data?.id
+
+  return redirect(`/projects/${projectId}`, {
     headers: response.headers,
   })
-  // return json({ success: true, error: null })
 }
 
 export default function Index() {
@@ -80,16 +72,16 @@ export default function Index() {
   return (
     <div className="h-full bg-zinc-950/95">
       <Navbar email={user.email || ""} />
-      <div className="flex flex-col px-16 lg:px-24 py-8">
+      <div className="flex flex-col px-16 py-8 lg:px-24">
         <div className="w-full">
           <div className="flex justify-between">
             <div>
-              <h1 className="text-white text-2xl">Your Projects</h1>
-              <p className="text-md text-zinc-600 mt-1">View all of your projects below</p>
+              <h1 className="text-2xl text-white">Your Projects</h1>
+              <p className="text-md mt-1 text-zinc-600">View all of your projects below</p>
             </div>
             <div>
               <Button className="px-4 py-3 text-sm" onPress={() => setIsCreateNewProjectModalOpen(true)}>
-                <Plus className="mr-1 -ml-1 -mt-0.5" /> New Project
+                <Plus className="-ml-1 -mt-0.5 mr-1" /> New Project
               </Button>
             </div>
           </div>
@@ -102,12 +94,12 @@ export default function Index() {
             <TextField placeholder="Enter project name" name="projectName" className="text-center" />
           </div>
           <div className="mt-3">
-            <Button disabled={isLoading} className="w-full h-10 py-6" type="submit">
+            <Button disabled={isLoading} className="h-10 w-full py-6" type="submit">
               {isLoading ? "Submitting..." : "Create New"}
             </Button>
           </div>
           <div className="mt-2">
-            <span className="text-red-500 text-sm">{actionData?.error}</span>
+            <span className="text-sm text-red-500">{actionData?.error}</span>
           </div>
         </Form>
       </CreateProjectModal>

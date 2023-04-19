@@ -1,12 +1,26 @@
+import type { Database } from "@/lib/database.types"
 import { cn } from "@/utils/cn"
+import mediaValidator from "@/utils/media-validator"
+import { useOutletContext } from "@remix-run/react"
+import type { SupabaseClient } from "@supabase/auth-helpers-remix"
 import { FileWarning, Plus, Search } from "lucide-react"
 import { useCallback } from "react"
 import { Button } from "react-aria-components"
 import { useDropzone } from "react-dropzone"
 
 export default function MediaLibrary() {
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    console.log(acceptedFiles)
+  const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    for (const file of acceptedFiles) {
+      const result = mediaValidator(file)
+      if (!result.valid) {
+        console.log(result.message)
+        continue
+      }
+      const { data, error } = await supabase.storage.from("media").upload("private/" + file.name, file)
+      console.log(error)
+      console.log(data)
+    }
   }, [])
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,

@@ -63,9 +63,9 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 export default function Project() {
   const { project } = useLoaderData<typeof loader>()
   const [data, setData] = useState(mockData)
-  useEffect(() => {
-    console.log(data)
-  }, [data])
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data])
 
   return (
     <div className="h-full bg-zinc-950/95">
