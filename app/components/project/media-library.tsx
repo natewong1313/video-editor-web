@@ -8,7 +8,14 @@ export default function MediaLibrary() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log(acceptedFiles)
   }, [])
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpeg", ".png"],
+      "video/*": [".mp4"],
+      "audio/*": [".mp3"],
+    },
+  })
   return (
     <div
       className={cn(

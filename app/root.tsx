@@ -1,3 +1,5 @@
+import type { Database } from "@/lib/database.types"
+import stylesheet from "@/static/styles/tailwind.css"
 import {
   Links,
   LiveReload,
@@ -8,13 +10,13 @@ import {
   useLoaderData,
   useRevalidator,
 } from "@remix-run/react"
-import { useState, useEffect } from "react"
-import type { LoaderArgs, LinksFunction } from "@vercel/remix"
-import { json } from "@vercel/remix"
 import { createBrowserClient, createServerClient } from "@supabase/auth-helpers-remix"
-import type { Database } from "@/lib/database.types"
-import stylesheet from "@/static/styles/tailwind.css"
+import type { LinksFunction, LoaderArgs } from "@vercel/remix"
+import { json } from "@vercel/remix"
+import React, { useEffect, useState } from "react"
 import { SSRProvider } from "react-bootstrap"
+// fixes issue with @xzdarcy/react-timeline-editor
+React.useLayoutEffect = React.useEffect
 
 export const links: LinksFunction = () => [{ rel: "stylesheet", href: stylesheet }]
 
