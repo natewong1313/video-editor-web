@@ -12,9 +12,9 @@ export default function Navbar({ projectName }: Props) {
       <div className="flex h-full items-center justify-between">
         <div>
           {/* back button */}
-          <RALink className="flex items-center text-zinc-500 focus:outline-none data-[hovered]:text-zinc-200 data-[pressed]:text-sky-500">
+          <RALink className="flex items-center text-zinc-500 focus:outline-none group data-[hovered]:text-zinc-200">
             <Link to="/">
-              <ArrowLeft className="h-5 w-5" />
+              <ArrowLeft className="h-5 w-5 hover:text-zinc-200" />
               <span className="ml-1 font-medium">Back</span>
             </Link>
           </RALink>

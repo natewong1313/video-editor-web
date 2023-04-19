@@ -1,8 +1,23 @@
+import { cn } from "@/utils/cn"
 import { FileWarning, Plus, Search } from "lucide-react"
+import { useCallback } from "react"
 import { Button } from "react-aria-components"
+import { useDropzone } from "react-dropzone"
+
 export default function MediaLibrary() {
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    console.log(acceptedFiles)
+  }, [])
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop })
   return (
-    <div className="w-96 px-6 py-4 bg-zinc-950/95 border-r border-zinc-700 h-full">
+    <div
+      className={cn(
+        "h-full w-96 border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
+        isDragActive ? "border border-dashed border-sky-500" : null,
+      )}
+      {...getRootProps()}
+    >
+      <input {...getInputProps()} />
       <div className="flex items-center justify-between">
         <h1 className="text-white">Media Library</h1>
         <div className="flex space-x-2">
@@ -16,12 +31,12 @@ export default function MediaLibrary() {
       </div>
       <div>
         <div className="mt-4">
-          <div className="flex flex-col items-center justify-center h-64">
+          <div className="flex h-64 flex-col items-center justify-center">
             <div className="text-4xl text-zinc-500">
               <FileWarning className="h-12 w-12" />
             </div>
-            <div className="text-lg text-zinc-300 mt-2">No media found</div>
-            <div className="text-sm text-zinc-500 mt-2">Drag and drop files to upload</div>
+            <div className="mt-2 text-lg text-zinc-300">No media found</div>
+            <div className="mt-2 text-sm text-zinc-500">Drag and drop files to upload</div>
           </div>
         </div>
       </div>
@@ -33,7 +48,7 @@ function IconBtn({ onPress, children }: { onPress: () => void; children: React.R
   return (
     <Button
       onPress={onPress}
-      className="py-2 px-2 bg-zinc-900 rounded-lg border-zinc-700 border data-[hovered]:border-zinc-500 text-zinc-500 data-[hovered]:text-zinc-300 focus:outline-none data-[pressed]:border-sky-500"
+      className="rounded-lg border border-zinc-700 bg-zinc-900 px-2 py-2 text-zinc-500 focus:outline-none data-[hovered]:border-zinc-500 data-[pressed]:border-sky-500 data-[hovered]:text-zinc-300"
     >
       {children}
     </Button>
