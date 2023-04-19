@@ -8,15 +8,22 @@ export default function MediaLibrary() {
   const onDrop = useCallback((acceptedFiles: File[]) => {
     console.log(acceptedFiles)
   }, [])
-  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({ onDrop })
-  const { onClick, ...rootProps } = getRootProps()
+  const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
+    onDrop,
+    accept: {
+      "image/*": [".jpeg", ".png"],
+      "video/*": [".mp4"],
+      "audio/*": [".mp3"],
+    },
+    noClick: true,
+  })
   return (
     <div
       className={cn(
         "h-full w-96 border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
         isDragActive ? "border border-dashed border-sky-500" : null,
       )}
-      {...rootProps}
+      {...getRootProps()}
     >
       <input {...getInputProps()} />
       <div className="flex items-center justify-between">

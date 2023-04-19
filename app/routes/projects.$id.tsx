@@ -2,6 +2,7 @@ import MediaLibrary from "@/components/project/media-library"
 import Navbar from "@/components/project/navbar"
 import VideoItem from "@/components/project/timeline/video-item"
 import { getAuthenticatedUser } from "@/utils/supabase"
+import type { V2_MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import type { LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
@@ -55,6 +56,10 @@ export async function loader({ params, request }: LoaderArgs) {
   return json({ project: data }, { headers: response.headers })
 }
 
+export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
+  return [{ title: data.project.name }]
+}
+
 export default function Project() {
   const { project } = useLoaderData<typeof loader>()
   const [data, setData] = useState(mockData)
@@ -64,9 +69,9 @@ export default function Project() {
 
   return (
     <div className="h-full bg-zinc-950/95">
-      <div className="flex flex-col h-full">
+      <div className="flex h-full flex-col">
         <Navbar projectName={project.name} />
-        <div className="flex-1 h-full">
+        <div className="h-full flex-1">
           <MediaLibrary />
         </div>
         <div className="h-[20rem] border-t border-zinc-700">
