@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/auth-helpers-remix"
 import { createServerClient } from "@supabase/auth-helpers-remix"
 import type { FileObject } from "@supabase/storage-js"
+import path from "path"
+import { createMediaArray } from "./media"
 
 export async function getAuthenticatedUser(request: Request, response: Response) {
   const supabaseClient = createServerClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_ANON_KEY || "", {
@@ -49,13 +51,27 @@ export async function getMediaFromStorage(supabaseClient: SupabaseClient, projec
   if (error) {
     return { error }
   }
-  const filteredMedia: FileObject[] = []
+  const filteredFiles: FileObject[] = []
   // get rid of item in data
   for (const media of data) {
     if (media.name !== ".emptyFolderPlaceholder") {
-      filteredMedia.push(media)
+      filteredFiles.push(media)
     }
   }
+  const filePathsArray = filteredFiles.map((file) => `${userId}/${projectId}/${file.name}`)
+  const createSignedUrlsResult = await supabaseClient.storage.from("media").createSignedUrls(filePathsArray, 86400)
+  if (createSignedUrlsResult.error) {
+    return { error: createSignedUrlsResult.error }
+  }
 
-  return { data: filteredMedia }
+  const signedUrls: { [index: string]: string } = {}
+  for (const urlData of createSignedUrlsResult.data) {
+    if (urlData.error) {
+      continue
+    }
+    const fileName = path.basename(urlData.path as string)
+    signedUrls[fileName] = urlData.signedUrl
+  }
+
+  return { data: createMediaArray(filteredFiles, signedUrls) }
 }

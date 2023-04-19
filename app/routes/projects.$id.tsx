@@ -59,7 +59,6 @@ export async function loader({ params, request }: LoaderArgs) {
       headers: response.headers,
     })
   }
-
   return json({ project: getProjectResult.data, media: getMediaResult.data }, { headers: response.headers })
 }
 
@@ -73,12 +72,11 @@ export default function Project() {
   // useEffect(() => {
   //   console.log(data)
   // }, [data])
-
   return (
     <div className="h-full bg-zinc-950/95">
       <div className="flex h-full flex-col">
         <Navbar projectName={project.name} />
-        <div className="h-full flex-1">
+        <div className="h-full flex-1 flex-col overflow-hidden">
           <MediaLibrary projectId={project.id} media={media} />
         </div>
         <div className="h-[20rem] border-t border-zinc-700">
