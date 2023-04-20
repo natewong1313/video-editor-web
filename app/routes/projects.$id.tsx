@@ -174,11 +174,20 @@ export default function Project() {
       }
     },
   }
+  const onExportBtnPress = async () => {
+    await fetch("/api/export", {
+      method: 'post',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        "url": "test"
+      })
+    })
+  }
   // const
   return (
     <div className="h-full bg-zinc-950/95">
       <div className="flex h-full flex-col">
-        <Navbar projectName={project.name} />
+        <Navbar projectName={project.name} onExportBtnPress={onExportBtnPress} />
         <div className="h-full w-full flex-1 overflow-hidden">
           <div className="flex h-full w-full">
             <MediaLibrary

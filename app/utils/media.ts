@@ -37,20 +37,20 @@ export async function createMediaArray(files: FileObject[], mediaUrls: { [key: s
       type,
     }
     if (type === MediaTypes.VIDEO) {
-      try {
-        console.log(currentUrl + "/api/get-media-duration")
-        const res = await fetch(currentUrl + "/api/get-media-duration", {
-          method: "post",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            url: media.url,
-          }),
-        })
-        const { duration } = await res.json()
-        media.duration = duration
-      } catch (error) {
-        console.error("error: ", error)
-      }
+      // try {
+      //   console.log(currentUrl + "/api/get-media-duration")
+      //   const res = await fetch(currentUrl + "/api/get-media-duration", {
+      //     method: "post",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({
+      //       url: media.url,
+      //     }),
+      //   })
+      //   const { duration } = await res.json()
+      //   media.duration = duration
+      // } catch (error) {
+      //   console.error("error: ", error)
+      // }
       // console.log(await worker.getFileInfo(media.url))
       // const duration = await getVideoDurationInSeconds(media.url)
       // media.duration = duration
