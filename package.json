@@ -25,6 +25,7 @@
     "iconoir-react": "^6.6.0",
     "isbot": "^3.6.5",
     "lucide-react": "^0.161.0",
+    "node-video-lib": "^2.2.3",
     "patch-package": "^6.5.1",
     "react": "^18.2.0",
     "react-aria": "^3.24.0",

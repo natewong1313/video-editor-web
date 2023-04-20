@@ -80,6 +80,9 @@ export default function Project() {
       return acc
     }, {} as Record<string, number>),
   )
+  const deleteMedia = () => {
+    console.log("OK")
+  }
   const addMediaToTimeline = (media: Media) => {
     const newTimelineData = [...timelineData]
     const videoRowEndTime = getEndTime(timelineData[0].actions)
