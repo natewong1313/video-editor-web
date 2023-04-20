@@ -81,7 +81,7 @@ export default function MediaLibrary({
   return (
     <div
       className={cn(
-        "flex h-full w-[32rem] flex-col overflow-auto border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
+        "flex h-full w-[24.2rem] min-w-[24.2rem] flex-col overflow-auto border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
         isDragActive ? "border border-dashed border-sky-500" : null,
       )}
       {...getRootProps()}

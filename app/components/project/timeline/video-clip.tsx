@@ -14,7 +14,7 @@ export default function VideoClip({ action, row, deleteFromTimeline }: Props) {
     <>
       <ContextMenu>
         <ContextMenuTrigger>
-          <div className="flex h-full cursor-pointer items-center justify-center bg-purple-700 font-sans">
+          <div className="flex h-full cursor-pointer items-center justify-start px-4 bg-purple-700 font-sans">
             <div className=" text-white">{action.id}</div>
           </div>
         </ContextMenuTrigger>

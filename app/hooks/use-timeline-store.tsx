@@ -2,12 +2,14 @@ import { create } from 'zustand'
 
 export type State = {
   currentClipPath: string
+  currentClipId: string
 }
 export type Action = {
-  updateCurrentClipPath: (clipId: string) => void
+  updateCurrentClip: (clipPath: string, clipId: string) => void
 }
 
 export const useTimelineStore = create<State & Action>((set) => ({
   currentClipPath: "",
-  updateCurrentClipPath: (clipPath: string) => set(() => ({ currentClipPath: clipPath }))
+  currentClipId: "",
+  updateCurrentClip: (clipPath: string, clipId: string) => set(() => ({ currentClipPath: clipPath, currentClipId: clipId }))
 }))
