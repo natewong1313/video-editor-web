@@ -1,7 +1,9 @@
+import TextField from "@/components/ui/TextField"
 import type { Database } from "@/lib/database.types"
 import type { Media } from "@/lib/media.types"
 import { cn } from "@/utils/cn"
-import { getMediaType, mediaValidator } from "@/utils/media"
+import { mediaValidator } from "@/utils/media"
+import { getMediaFromStorage } from "@/utils/supabase"
 import { useNavigate, useOutletContext } from "@remix-run/react"
 import type { SupabaseClient } from "@supabase/auth-helpers-remix"
 import { useEffect, useRef, useState } from "react"
@@ -10,14 +12,14 @@ import Header from "./header"
 import MediaPreview from "./media-preview"
 import NoMediaWarning from "./no-media-warning"
 import StatusBar from "./status-bar"
-import VideoPreview from "./video-preview"
 
 type Props = {
   projectId: string
   media: Media[]
+  addMediaToTimeline: (media: Media) => void
 }
 
-export default function MediaLibrary({ projectId, media }: Props) {
+export default function MediaLibrary({ projectId, media, addMediaToTimeline }: Props) {
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const [offsetHeight, setOffsetHeight] = useState(0)
@@ -25,6 +27,7 @@ export default function MediaLibrary({ projectId, media }: Props) {
   const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
   const [projectMedia, setProjectMedia] = useState(media)
   const hasMedia = projectMedia.length > 0
+  const [showSearchInput, setShowSearchInput] = useState(false)
 
   const onDrop = async (acceptedFiles: File[]) => {
     const {
@@ -35,7 +38,6 @@ export default function MediaLibrary({ projectId, media }: Props) {
       return
     }
     let filesAdded = 0
-    // const file of acceptedFiles
     for (let i = 0; i < acceptedFiles.length; i++) {
       setStatusBarMsg(`Uploading ${i + 1} of ${acceptedFiles.length} files...`)
       const file = acceptedFiles[i]
@@ -54,10 +56,10 @@ export default function MediaLibrary({ projectId, media }: Props) {
     }
     setStatusBarMsg("")
     if (filesAdded > 0) {
-      // const getMediaResult = await getMediaFromStorage(supabase, projectId, user.id)
-      // if (getMediaResult.data) {
-      //   setProjectMedia(getMediaResult.data)
-      // }
+      const getMediaResult = await getMediaFromStorage(supabase, projectId, user.id)
+      if (getMediaResult.data) {
+        setProjectMedia(getMediaResult.data)
+      }
     }
   }
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
@@ -82,43 +84,19 @@ export default function MediaLibrary({ projectId, media }: Props) {
       ref={containerRef}
     >
       <input {...getInputProps()} />
-      <Header onUploadBtnPress={open} />
+      <Header
+        onUploadBtnPress={open}
+        onSearchBtnPress={() => {
+          setShowSearchInput(!showSearchInput)
+        }}
+      />
+      <TextField className={cn("mt-1", showSearchInput ? null : "hidden")} placeholder="Search for media..." />
       <div className="mt-4">
         {hasMedia ? (
-          <div className="flex flex-wrap gap-4">
+          <div className="flex flex-wrap gap-2">
             {projectMedia.map((media) => (
-              <MediaPreview key={media.storageId} media={media} />
+              <MediaPreview key={media.storageId} media={media} addMediaToTimeline={addMediaToTimeline} />
             ))}
-
-            {/* {projectMedia.map((media) => {
-              if (getMediaType(media.pathName) === MediaTypes.IMAGE) {
-                return (
-                  <div
-                    key={media.pathName}
-                    className="flex h-24 w-24 items-center justify-center rounded-md bg-zinc-900"
-                  >
-                    <img src={media.url} alt={media.pathName} className="h-full w-full object-cover" />
-                  </div>
-                )
-              }
-              if (getMediaType(media.pathName) === MediaTypes.VIDEO) {
-                return (
-                  <MediaPreview>
-                    <VideoPreview key={media.pathName} src={media.url} />
-                  </MediaPreview>
-                )
-              }
-              if (getMediaType(media.pathName) === MediaTypes.AUDIO) {
-                return (
-                  <div
-                    key={media.pathName}
-                    className="flex h-24 w-24 items-center justify-center rounded-md bg-zinc-900"
-                  >
-                    <audio src={media.url} className="h-full w-full object-cover" />
-                  </div>
-                )
-              }
-            })} */}
           </div>
         ) : (
           <NoMediaWarning />

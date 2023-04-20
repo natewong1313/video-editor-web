@@ -6,18 +6,19 @@ import VideoPreview from "./video-preview"
 
 type Props = {
   media: Media
+  addMediaToTimeline: (media: Media) => void
 }
 
-export default function MediaPreview({ media }: Props) {
+export default function MediaPreview({ media, addMediaToTimeline }: Props) {
   const [isHovering, setIsHovering] = useState(false)
   return (
     <div
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
-      className="group flex w-24 cursor-pointer flex-col overflow-hidden"
-      //   onClick={}
+      className="group flex w-[6.6rem] cursor-pointer flex-col overflow-hidden"
+      onClick={() => addMediaToTimeline(media)}
     >
-      <div className="flex h-24 w-24 items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 group-hover:border-zinc-700">
+      <div className="flex h-[6.6rem] w-[6.6rem] items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 group-hover:border-sky-500">
         {getMediaType(media.pathName) === MediaTypes.VIDEO ? (
           <VideoPreview src={media.url} isHovering={isHovering} />
         ) : null}

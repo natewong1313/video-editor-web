@@ -1,5 +1,5 @@
-import { TextField, Text, Label, Input } from "react-aria-components"
 import clsx from "clsx"
+import { Input, Label, Text, TextField } from "react-aria-components"
 
 type Props = {
   label?: string
@@ -10,6 +10,9 @@ type Props = {
   autoComplete?: string
   className?: string
   errorMessage?: string
+  value?: string
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+  onChange?: (value: any) => void
 }
 
 export default function StyledTextField(props: Props) {
@@ -18,7 +21,7 @@ export default function StyledTextField(props: Props) {
       <Label className="text-sm text-white">{props.label}</Label>
       <Input
         className={clsx(
-          "w-full mt-1 flex h-10 rounded-md border bg-transparent py-2 px-3 text-sm font-medium placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-offset-2 border-zinc-700 text-slate-50  focus:ring-offset-slate-900",
+          "mt-1 flex h-10 w-full rounded-md border border-zinc-700 bg-transparent px-3 py-2 text-sm font-medium text-slate-50 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-offset-2  focus:ring-offset-slate-900",
           props.className,
         )}
         name={props.name}
@@ -26,9 +29,11 @@ export default function StyledTextField(props: Props) {
         placeholder={props.placeholder}
         defaultValue={props.defaultValue}
         autoComplete={props.autoComplete}
+        value={props.value}
+        onChange={props.onChange}
       />
       {props.errorMessage && (
-        <Text slot="errorMessage" className="text-sm mt-1 text-red-500">
+        <Text slot="errorMessage" className="mt-1 text-sm text-red-500">
           {props.errorMessage}
         </Text>
       )}

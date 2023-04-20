@@ -1,14 +1,16 @@
 import MediaLibrary from "@/components/project/media-library"
 import Navbar from "@/components/project/navbar"
 import VideoItem from "@/components/project/timeline/video-item"
+import { Media } from "@/lib/media.types"
 import { getAuthenticatedUser, getMediaFromStorage, getProjectFromDb } from "@/utils/supabase"
+import { getEndTime } from "@/utils/timeline"
 import type { V2_MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import type { LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
 import type { TimelineEffect, TimelineRow } from "@xzdarcy/react-timeline-editor"
 import { Timeline } from "@xzdarcy/react-timeline-editor"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export const mockEffect: Record<string, TimelineEffect> = {
   video: {
@@ -22,13 +24,13 @@ export const mockData: TimelineRow[] = [
     id: "0",
     actions: [
       {
-        id: "action00",
+        id: "action0",
         start: 0,
         end: 3,
         effectId: "video",
       },
       {
-        id: "action10",
+        id: "action1",
         start: 3,
         end: 5,
         effectId: "video",
@@ -68,25 +70,39 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Project() {
   const { project, media } = useLoaderData<typeof loader>()
-  const [data, setData] = useState(mockData)
+  const [timelineData, setTimelineData] = useState(mockData)
+  const [videoRowEndTime, setVideoRowEndTime] = useState(getEndTime(timelineData[0].actions))
   // useEffect(() => {
-  //   console.log(data)
-  // }, [data])
+  //   // console.log(getEndTime(timelineData[0].actions))
+  //   console.log(endTime)
+  // }, [endTime])
+  const addMediaToTimeline = (media: Media) => {
+    const newTimelineData = [...timelineData]
+    newTimelineData[0].actions.push({
+      id: `action${newTimelineData[0].actions.length}`,
+      start: videoRowEndTime,
+      end: videoRowEndTime + 3,
+      effectId: "video",
+    })
+    console.log(newTimelineData)
+    setTimelineData(newTimelineData)
+  }
   return (
     <div className="h-full bg-zinc-950/95">
       <div className="flex h-full flex-col">
         <Navbar projectName={project.name} />
         <div className="h-full flex-1 flex-col overflow-hidden">
-          <MediaLibrary projectId={project.id} media={media} />
+          <MediaLibrary projectId={project.id} media={media} addMediaToTimeline={addMediaToTimeline} />
         </div>
         <div className="h-[20rem] border-t border-zinc-700">
           <Timeline
             style={{ width: "100%", height: "19.9rem", backgroundColor: "rgb(9 9 11)" }}
             onChange={(editorData: TimelineRow[]) => {
-              console.log(editorData)
-              setData(editorData)
+              // console.log(editorData)
+              setVideoRowEndTime(getEndTime(editorData[0].actions))
+              setTimelineData(editorData)
             }}
-            editorData={data}
+            editorData={timelineData}
             effects={mockEffect}
             autoScroll={true}
             gridSnap={true}
