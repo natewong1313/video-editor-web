@@ -1,7 +1,8 @@
 import MediaLibrary from "@/components/project/media-library"
 import Navbar from "@/components/project/navbar"
-import VideoItem from "@/components/project/timeline/video-item"
-import { Media } from "@/lib/media.types"
+import VideoClip from "@/components/project/timeline/video-clip"
+import type { Media } from "@/lib/media.types"
+import { MediaTypes } from "@/lib/media.types"
 import { getAuthenticatedUser, getMediaFromStorage, getProjectFromDb } from "@/utils/supabase"
 import { getEndTime } from "@/utils/timeline"
 import type { V2_MetaFunction } from "@remix-run/react"
@@ -10,7 +11,7 @@ import type { LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
 import type { TimelineEffect, TimelineRow } from "@xzdarcy/react-timeline-editor"
 import { Timeline } from "@xzdarcy/react-timeline-editor"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 
 export const mockEffect: Record<string, TimelineEffect> = {
   video: {
@@ -23,18 +24,18 @@ export const mockData: TimelineRow[] = [
   {
     id: "0",
     actions: [
-      // {
-      //   id: "action0",
-      //   start: 0,
-      //   end: 3,
-      //   effectId: "video",
-      // },
-      // {
-      //   id: "action1",
-      //   start: 3,
-      //   end: 5,
-      //   effectId: "video",
-      // },
+      {
+        id: "action0",
+        start: 0,
+        end: 3,
+        effectId: "video",
+      },
+      {
+        id: "action1",
+        start: 3,
+        end: 5,
+        effectId: "video",
+      },
     ],
   },
 ]
@@ -98,6 +99,16 @@ export default function Project() {
     })
     setTimelineData(newTimelineData)
   }
+  // delete clip from timeline
+  const deleteFromTimeline = (clipId: string, mediaType: MediaTypes) => {
+    if (mediaType === MediaTypes.VIDEO) {
+      const newTimelineData = [...timelineData]
+      const videoRow = newTimelineData[0]
+      const newActions = videoRow.actions.filter((action) => action.id !== clipId)
+      videoRow.actions = newActions
+      setTimelineData(newTimelineData)
+    }
+  }
   return (
     <div className="h-full bg-zinc-950/95">
       <div className="flex h-full flex-col">
@@ -120,7 +131,7 @@ export default function Project() {
             dragLine={true}
             getActionRender={(action, row) => {
               if (action.effectId === "video") {
-                return <VideoItem action={action} row={row} />
+                return <VideoClip action={action} row={row} deleteFromTimeline={deleteFromTimeline} />
               }
               // else if (action.effectId === 'effect1') {
               //   return <CustomRender1 action={action} row={row}/>
