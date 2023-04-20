@@ -1,5 +1,8 @@
+import type { Media } from "@/lib/media.types"
 import { MediaTypes } from "@/lib/media.types"
 import type { FileObject } from "@supabase/storage-js"
+// import getVideoDurationInSeconds from "get-video-duration"
+// import { FFprobeWorker } from "ffprobe-wasm"
 import path from "path"
 
 const allowedTypes = [".jpg", ".jpeg", ".png", ".mp4", ".mp3"]
@@ -9,16 +12,52 @@ const mediaTypesObj = {
   [MediaTypes.AUDIO]: [".mp3"],
 }
 
-export function createMediaArray(files: FileObject[], mediaUrls: { [key: string]: string }) {
-  return files.map((file) => {
+export async function createMediaArray(files: FileObject[], mediaUrls: { [key: string]: string }, currentUrl: string) {
+  // const mediaArray = files.map(async (file) => {
+  //   const type = getMediaType(file.name)
+  //   const media = {
+  //     pathName: file.name,
+  //     storageId: file.id,
+  //     url: mediaUrls[file.name],
+  //     type,
+  //   }
+  //   if (type === MediaTypes.VIDEO) {
+  //     const duration = await getVideoDurationInSeconds(media.url)
+  //     console.log(duration)
+  //   }
+  //   return media
+  // })
+  const mediaArray: Media[] = []
+  for (const file of files) {
     const type = getMediaType(file.name)
-    return {
+    const media: Media = {
       pathName: file.name,
       storageId: file.id,
       url: mediaUrls[file.name],
       type,
     }
-  })
+    if (type === MediaTypes.VIDEO) {
+      try {
+        console.log(currentUrl + "/api/get-media-duration")
+        const res = await fetch(currentUrl + "/api/get-media-duration", {
+          method: "post",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            url: media.url,
+          }),
+        })
+        const { duration } = await res.json()
+        media.duration = duration
+      } catch (error) {
+        console.error("error: ", error)
+      }
+      // console.log(await worker.getFileInfo(media.url))
+      // const duration = await getVideoDurationInSeconds(media.url)
+      // media.duration = duration
+    }
+    mediaArray.push(media)
+  }
+  return mediaArray
 }
 
 export function mediaValidator(file: File) {

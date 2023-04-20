@@ -24,7 +24,7 @@ export default function MediaLibrary({ projectId, media, addMediaToTimeline }: P
   const containerRef = useRef<HTMLDivElement>(null)
   const [offsetHeight, setOffsetHeight] = useState(0)
   const [statusBarMsg, setStatusBarMsg] = useState("")
-  const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
+  const { supabase, currentUrl } = useOutletContext<{ supabase: SupabaseClient<Database>; currentUrl: string }>()
   const [projectMedia, setProjectMedia] = useState(media)
   const hasMedia = projectMedia.length > 0
   const [showSearchInput, setShowSearchInput] = useState(false)
@@ -56,9 +56,9 @@ export default function MediaLibrary({ projectId, media, addMediaToTimeline }: P
     }
     setStatusBarMsg("")
     if (filesAdded > 0) {
-      const getMediaResult = await getMediaFromStorage(supabase, projectId, user.id)
+      const getMediaResult = await getMediaFromStorage(supabase, projectId, user.id, currentUrl)
       if (getMediaResult.data) {
-        setProjectMedia(getMediaResult.data)
+        await setProjectMedia(getMediaResult.data)
       }
     }
   }

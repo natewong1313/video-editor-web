@@ -19,6 +19,7 @@
     "@vercel/remix": "^1.15.0",
     "@xzdarcy/react-timeline-editor": "^0.1.9",
     "clsx": "^1.2.1",
+    "get-video-duration": "^4.1.0",
     "iconoir-react": "^6.6.0",
     "isbot": "^3.6.5",
     "lucide-react": "^0.161.0",

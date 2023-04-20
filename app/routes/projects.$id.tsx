@@ -54,7 +54,8 @@ export async function loader({ params, request }: LoaderArgs) {
       headers: response.headers,
     })
   }
-  const getMediaResult = await getMediaFromStorage(supabaseClient, projectId, user.id)
+  const currentUrl = process.env.VERCEL_URL || "http://localhost:3000"
+  const getMediaResult = await getMediaFromStorage(supabaseClient, projectId, user.id, currentUrl)
   if (getMediaResult.error) {
     console.log(getMediaResult.error)
     return redirect("/", {
@@ -88,7 +89,7 @@ export default function Project() {
     newTimelineData[0].actions.push({
       id: clipName,
       start: videoRowEndTime,
-      end: videoRowEndTime + 3,
+      end: videoRowEndTime + (media.duration || 5),
       effectId: "video",
     })
     setMediaOccurences({

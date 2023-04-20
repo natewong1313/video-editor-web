@@ -24,6 +24,7 @@ export const loader = async ({ request }: LoaderArgs) => {
   const env = {
     SUPABASE_URL: process.env.SUPABASE_URL || "",
     SUPABASE_ANON_KEY: process.env.SUPABASE_ANON_KEY || "",
+    CURRENT_URL: process.env.VERCEL_URL || "http://localhost:3000",
   }
 
   const response = new Response()
@@ -80,7 +81,7 @@ export default function App() {
           <Links />
         </head>
         <body className="h-screen font-chivo-mono">
-          <Outlet context={{ supabase }} />
+          <Outlet context={{ supabase, currentUrl: env.CURRENT_URL }} />
           <ScrollRestoration />
           <Scripts />
           <LiveReload />

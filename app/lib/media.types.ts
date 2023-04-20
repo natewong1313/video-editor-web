@@ -9,4 +9,5 @@ export type Media = {
   storageId: string
   url: string
   type: MediaTypes
+  duration?: number
 }

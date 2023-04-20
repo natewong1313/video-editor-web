@@ -46,7 +46,7 @@ export async function getProjectFromDb(supabaseClient: SupabaseClient, projectId
   return { data }
 }
 
-export async function getMediaFromStorage(supabaseClient: SupabaseClient, projectId: string, userId: string) {
+export async function getMediaFromStorage(supabaseClient: SupabaseClient, projectId: string, userId: string, currentUrl: string) {
   const { data, error } = await supabaseClient.storage.from("media").list(`${userId}/${projectId}`)
   if (error) {
     return { error }
@@ -73,5 +73,7 @@ export async function getMediaFromStorage(supabaseClient: SupabaseClient, projec
     signedUrls[fileName] = urlData.signedUrl
   }
 
-  return { data: createMediaArray(filteredFiles, signedUrls) }
+  const mediaArray = await createMediaArray(filteredFiles, signedUrls, currentUrl)
+
+  return { data: mediaArray }
 }
