@@ -1,7 +1,7 @@
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/ContextMenu"
 import type { TimelineAction, TimelineRow } from "@xzdarcy/react-timeline-editor"
 import { MediaTypes } from "@/lib/media.types"
-import {getClipPath} from "@/utils/timeline"
+import { getClipPath } from "@/utils/timeline"
 
 type Props = {
   action: TimelineAction
@@ -10,7 +10,6 @@ type Props = {
 }
 export default function VideoClip({ action, row, deleteFromTimeline }: Props) {
   const pathName = getClipPath(action.id)
-  console.log(pathName)
   return (
     <>
       <ContextMenu>
@@ -20,7 +19,7 @@ export default function VideoClip({ action, row, deleteFromTimeline }: Props) {
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem className="cursor-pointer hover:text-red-500"  onClick={() => deleteFromTimeline(action.id, MediaTypes.VIDEO)}>Delete</ContextMenuItem>
+          <ContextMenuItem className="cursor-pointer hover:text-red-500" onClick={() => deleteFromTimeline(action.id, MediaTypes.VIDEO)}>Delete</ContextMenuItem>
           {/* <ContextMenuItem>Billing</ContextMenuItem>
           <ContextMenuItem>Team</ContextMenuItem>
           <ContextMenuItem>Subscription</ContextMenuItem> */}

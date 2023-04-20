@@ -13,13 +13,8 @@ import { json, redirect } from "@vercel/remix"
 import type { TimelineEffect, TimelineRow, TimelineState } from "@xzdarcy/react-timeline-editor"
 import { Timeline } from "@xzdarcy/react-timeline-editor"
 import { useRef, useState } from "react"
-
-export const mockEffect: Record<string, TimelineEffect> = {
-  video: {
-    id: "video",
-    name: "video",
-  },
-}
+import { useDurationsStore } from "@/hooks/use-durations-store"
+import { useTimelineStore } from "@/hooks/use-timeline-store"
 
 export const mockData: TimelineRow[] = [
   {
@@ -75,6 +70,9 @@ export default function Project() {
   const { project, media } = useLoaderData<typeof loader>()
   const [timelineData, setTimelineData] = useState(mockData)
   const timelineState = useRef<TimelineState>()
+  const durations = useDurationsStore((state) => state.durations)
+  const [currentClipPath, updateCurrentClipPath] = useTimelineStore((state) => [state.currentClipPath, state.updateCurrentClipPath])
+  console.log(currentClipPath)
   // for keeping track of how many times the same clip is in the timeline
   const [mediaOccurences, setMediaOccurences] = useState(
     media.reduce((acc, curr) => {
@@ -82,15 +80,11 @@ export default function Project() {
       return acc
     }, {} as Record<string, number>),
   )
-  const [mediaDurations, setMediaDurations] = useState(
-    media.reduce((acc, curr) => {
-      acc[curr.pathName] = 0
-      return acc
-    }, {} as Record<string, number>),
-  )
-  const deleteMedia = () => {
-    console.log("OK")
-  }
+  media.reduce((acc, curr) => {
+    acc[curr.pathName] = 0
+    return acc
+  }, {} as Record<string, number>)
+
   const addMediaToTimeline = (media: Media) => {
     const newTimelineData = [...timelineData]
     const videoRowEndTime = getEndTime(timelineData[0].actions)
@@ -98,11 +92,11 @@ export default function Project() {
     if (mediaOccurences[media.pathName] > 0) {
       clipName = `${media.pathName} (${mediaOccurences[media.pathName]})`
     }
-    // let duration = mediaDurations[media.pathName]
+    console.log(durations[media.pathName])
     newTimelineData[0].actions.push({
       id: clipName,
       start: videoRowEndTime,
-      end: videoRowEndTime + mediaDurations[media.pathName],
+      end: videoRowEndTime + durations[media.pathName],
       effectId: "video",
     })
     setMediaOccurences({
@@ -121,29 +115,47 @@ export default function Project() {
       setTimelineData(newTimelineData)
     }
   }
-  console.log(mediaDurations)
+
+  const effects: Record<string, TimelineEffect> = {
+    video: {
+      id: "video",
+      name: "video",
+      source: {
+        start: ({ action, engine, isPlaying, time }) => {
+          if (isPlaying) {
+            console.log("start", action)
+            // const src = (action as CustomTimelineAction).data.src;
+            // audioControl.start({ id: src, src, startTime: action.start, engine, time });
+          }
+        },
+        enter: ({ action, engine, isPlaying, time }) => {
+          console.log("enter", action)
+          updateCurrentClipPath(action.id)
+        },
+        leave: ({ action, engine }) => {
+          console.log("leave", action)
+          // const src = (action as CustomTimelineAction).data.src;
+          // audioControl.stop({ id: src, engine });
+        },
+        stop: ({ action, engine }) => {
+          console.log("stop", action)
+          // const src = (action as CustomTimelineAction).data.src;
+          // audioControl.stop({ id: src, engine });
+        },
+      }
+    },
+  }
+  // const
   return (
     <div className="h-full bg-zinc-950/95">
       <div className="flex h-full flex-col">
         <Navbar projectName={project.name} />
-        {/* <div className="h-full w-full flex-1 overflow-hidden">
-          <MediaLibrary
-            projectId={project.id}
-            media={media}
-            addMediaToTimeline={addMediaToTimeline}
-            mediaDurations={mediaDurations}
-            setMediaDurations={setMediaDurations}
-          />
-          <MediaPlayer timelineState={timelineState as React.MutableRefObject<TimelineState>} />
-        </div> */}
         <div className="h-full w-full flex-1 overflow-hidden">
           <div className="flex h-full w-full">
             <MediaLibrary
               projectId={project.id}
               media={media}
               addMediaToTimeline={addMediaToTimeline}
-              mediaDurations={mediaDurations}
-              setMediaDurations={setMediaDurations}
             />
             <MediaPlayer timelineState={timelineState as React.MutableRefObject<TimelineState>} />
           </div>
@@ -158,7 +170,7 @@ export default function Project() {
             }}
             ref={timelineState as React.MutableRefObject<TimelineState>}
             editorData={timelineData}
-            effects={mockEffect}
+            effects={effects}
             autoScroll={true}
             gridSnap={true}
             dragLine={true}

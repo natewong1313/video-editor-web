@@ -18,16 +18,12 @@ type Props = {
   projectId: string
   media: Media[]
   addMediaToTimeline: (media: Media) => void
-  mediaDurations: Record<string, number>
-  setMediaDurations: (durations: Record<string, number>) => void
 }
 
 export default function MediaLibrary({
   projectId,
   media,
-  addMediaToTimeline,
-  mediaDurations,
-  setMediaDurations,
+  addMediaToTimeline
 }: Props) {
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
@@ -66,7 +62,7 @@ export default function MediaLibrary({
     if (filesAdded > 0) {
       const getMediaResult = await getMediaFromStorage(supabase, projectId, user.id, currentUrl)
       if (getMediaResult.data) {
-        await setProjectMedia(getMediaResult.data)
+        setProjectMedia(getMediaResult.data)
       }
     }
   }
@@ -85,7 +81,7 @@ export default function MediaLibrary({
   return (
     <div
       className={cn(
-        "flex h-full w-[30.05rem] flex-col overflow-auto border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
+        "flex h-full w-[32rem] flex-col overflow-auto border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
         isDragActive ? "border border-dashed border-sky-500" : null,
       )}
       {...getRootProps()}
@@ -107,8 +103,6 @@ export default function MediaLibrary({
                 key={media.storageId}
                 media={media}
                 addMediaToTimeline={addMediaToTimeline}
-                mediaDurations={mediaDurations}
-                setMediaDurations={setMediaDurations}
               />
             ))}
           </div>

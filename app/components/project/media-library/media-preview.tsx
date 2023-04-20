@@ -7,11 +7,9 @@ import VideoPreview from "./video-preview"
 type Props = {
   media: Media
   addMediaToTimeline: (media: Media) => void
-  mediaDurations: Record<string, number>
-  setMediaDurations: (durations: Record<string, number>) => void
 }
 
-export default function MediaPreview({ media, addMediaToTimeline, mediaDurations, setMediaDurations }: Props) {
+export default function MediaPreview({ media, addMediaToTimeline }: Props) {
   const [isHovering, setIsHovering] = useState(false)
   return (
     <ContextMenu>
@@ -28,8 +26,6 @@ export default function MediaPreview({ media, addMediaToTimeline, mediaDurations
                 pathName={media.pathName}
                 src={media.url}
                 isHovering={isHovering}
-                mediaDurations={mediaDurations}
-                setMediaDurations={setMediaDurations}
               />
             ) : null}
             {getMediaType(media.pathName) === MediaTypes.IMAGE ? (
