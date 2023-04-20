@@ -9,11 +9,32 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      file_data: {
+        Row: {
+          created_at: string | null
+          duration: number | null
+          id: string
+          media_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration?: number | null
+          id?: string
+          media_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number | null
+          id?: string
+          media_id?: string
+        }
+      }
       projects: {
         Row: {
           created_at: string
           id: string
           name: string
+          timeline_json: Json | null
           updated_at: string
           user_id: string
         }
@@ -21,6 +42,7 @@ export interface Database {
           created_at?: string
           id?: string
           name?: string
+          timeline_json?: Json | null
           updated_at?: string
           user_id: string
         }
@@ -28,6 +50,7 @@ export interface Database {
           created_at?: string
           id?: string
           name?: string
+          timeline_json?: Json | null
           updated_at?: string
           user_id?: string
         }

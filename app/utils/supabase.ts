@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/auth-helpers-remix"
 import type { FileObject } from "@supabase/storage-js"
 import path from "path"
 import { createMediaArray } from "./media"
+import type { TimelineRow } from "@xzdarcy/react-timeline-editor"
 
 export async function getAuthenticatedUser(request: Request, response: Response) {
   const supabaseClient = createServerClient(process.env.SUPABASE_URL || "", process.env.SUPABASE_ANON_KEY || "", {
@@ -54,7 +55,6 @@ export async function getMediaFromStorage(supabaseClient: SupabaseClient, projec
   const filteredFiles: FileObject[] = []
   // get rid of item in data
   for (const media of data) {
-    console.log(media)
     if (media.name !== ".emptyFolderPlaceholder") {
       filteredFiles.push(media)
     }
@@ -77,4 +77,12 @@ export async function getMediaFromStorage(supabaseClient: SupabaseClient, projec
   const mediaArray = await createMediaArray(filteredFiles, signedUrls, currentUrl)
 
   return { data: mediaArray }
+}
+
+export async function updateProjectTimelineInDb(supabaseClient: SupabaseClient, projectId: string, timeline: TimelineRow[]) {
+  const { data, error } = await supabaseClient.from("projects").update({ timeline_json: JSON.stringify(timeline), updated_at: new Date().toISOString() }).eq("id", projectId)
+  if (error) {
+    return { error }
+  }
+  return { data }
 }

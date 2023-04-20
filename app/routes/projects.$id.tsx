@@ -4,10 +4,11 @@ import Navbar from "@/components/project/navbar"
 import VideoClip from "@/components/project/timeline/video-clip"
 import type { Media } from "@/lib/media.types"
 import { MediaTypes } from "@/lib/media.types"
-import { getAuthenticatedUser, getMediaFromStorage, getProjectFromDb } from "@/utils/supabase"
+import type { Database } from "@/lib/database.types"
+import { getAuthenticatedUser, getMediaFromStorage, getProjectFromDb, updateProjectTimelineInDb } from "@/utils/supabase"
 import { getEndTime, getClipPath } from "@/utils/timeline"
 import type { V2_MetaFunction } from "@remix-run/react"
-import { useLoaderData } from "@remix-run/react"
+import { useLoaderData, useOutletContext } from "@remix-run/react"
 import type { LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
 import type { TimelineEffect, TimelineRow, TimelineState } from "@xzdarcy/react-timeline-editor"
@@ -15,6 +16,7 @@ import { Timeline } from "@xzdarcy/react-timeline-editor"
 import { useRef, useState } from "react"
 import { useDurationsStore } from "@/hooks/use-durations-store"
 import { useTimelineStore } from "@/hooks/use-timeline-store"
+import type { SupabaseClient } from "@supabase/auth-helpers-remix"
 
 export const mockData: TimelineRow[] = [
   {
@@ -53,13 +55,16 @@ export async function loader({ params, request }: LoaderArgs) {
   }
   const currentUrl = process.env.VERCEL_URL || "http://localhost:3000"
   const getMediaResult = await getMediaFromStorage(supabaseClient, projectId, user.id, currentUrl)
+  const media: Media[] = getMediaResult.data || []
   if (getMediaResult.error) {
-    console.log(getMediaResult.error)
-    return redirect("/", {
-      headers: response.headers,
-    })
+    if (getMediaResult.error.message !== `{"size":0}`) {
+      console.log(getMediaResult.error)
+      return redirect("/", {
+        headers: response.headers,
+      })
+    }
   }
-  return json({ project: getProjectResult.data, media: getMediaResult.data, userId: user.id }, { headers: response.headers })
+  return json({ project: getProjectResult.data, media, userId: user.id }, { headers: response.headers })
 }
 
 export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
@@ -68,7 +73,8 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Project() {
   const { project, media, userId } = useLoaderData<typeof loader>()
-  const [timelineData, setTimelineData] = useState(mockData)
+  const [timelineData, setTimelineData] = useState<TimelineRow[]>(project.timeline_json ? JSON.parse(project.timeline_json) : mockData)
+  const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
   const timelineState = useRef<TimelineState>()
   const durations = useDurationsStore((state) => state.durations)
   const [currentClipId, updateCurrentClip] = useTimelineStore((state) => [state.currentClipId, state.updateCurrentClip])
@@ -84,7 +90,7 @@ export default function Project() {
     return acc
   }, {} as Record<string, number>)
 
-  const addMediaToTimeline = (media: Media) => {
+  const addMediaToTimeline = async (media: Media) => {
     const newTimelineData = [...timelineData]
     const videoRowEndTime = getEndTime(timelineData[0].actions)
     let clipName = media.pathName
@@ -102,9 +108,26 @@ export default function Project() {
       [media.pathName]: mediaOccurences[media.pathName] + 1,
     })
     setTimelineData(newTimelineData)
+    const { error } = await updateProjectTimelineInDb(supabase, project.id, timelineData)
+    if (error) {
+      console.log(error)
+    }
+  }
+  const splitClip = (clipId: string) => {
+    // let clipIndex = 0
+    // let originalClip: TimelineAction
+    // for(let i = 0; i < timelineData[0].actions.length; i++){
+    //   if(timelineData[0].actions[i].id === clipId){
+    //     clipIndex = i
+    //     originalClip = timelineData[0].actions[i]
+    //     break
+    //   }
+    // }
+    // const newTimelineData = [...timelineData]
+
   }
   // delete clip from timeline
-  const deleteFromTimeline = (clipId: string, mediaType: MediaTypes) => {
+  const deleteFromTimeline = async (clipId: string, mediaType: MediaTypes) => {
     if (mediaType === MediaTypes.VIDEO) {
       const newTimelineData = [...timelineData]
       const videoRow = newTimelineData[0]
@@ -114,6 +137,10 @@ export default function Project() {
       if (currentClipId === clipId) {
         updateCurrentClip("", "")
       }
+    }
+    const { error } = await updateProjectTimelineInDb(supabase, project.id, timelineData)
+    if (error) {
+      console.log(error)
     }
   }
 
@@ -171,6 +198,7 @@ export default function Project() {
             style={{ width: "100%", height: "19.9rem", backgroundColor: "rgb(9 9 11)" }}
             onChange={(editorData: TimelineRow[]) => {
               setTimelineData(editorData)
+              updateProjectTimelineInDb(supabase, project.id, timelineData)
             }}
             ref={timelineState as React.MutableRefObject<TimelineState>}
             editorData={timelineData}
@@ -180,7 +208,7 @@ export default function Project() {
             dragLine={true}
             getActionRender={(action, row) => {
               if (action.effectId === "video") {
-                return <VideoClip action={action} row={row} deleteFromTimeline={deleteFromTimeline} />
+                return <VideoClip action={action} row={row} splitClip={splitClip} deleteFromTimeline={deleteFromTimeline} />
               }
             }}
           />

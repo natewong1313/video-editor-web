@@ -6,9 +6,10 @@ import { getClipPath } from "@/utils/timeline"
 type Props = {
   action: TimelineAction
   row: TimelineRow
+  splitClip: (clipId: string) => void
   deleteFromTimeline: (clipId: string, mediaType: MediaTypes) => void
 }
-export default function VideoClip({ action, row, deleteFromTimeline }: Props) {
+export default function VideoClip({ action, row, splitClip, deleteFromTimeline }: Props) {
   const pathName = getClipPath(action.id)
   return (
     <>
@@ -19,7 +20,8 @@ export default function VideoClip({ action, row, deleteFromTimeline }: Props) {
           </div>
         </ContextMenuTrigger>
         <ContextMenuContent>
-          <ContextMenuItem className="cursor-pointer hover:text-red-500" onClick={() => deleteFromTimeline(action.id, MediaTypes.VIDEO)}>Delete</ContextMenuItem>
+          <ContextMenuItem className="cursor-pointer text-zinc-500 hover:text-white" onClick={() => splitClip(action.id)}>Split at marker</ContextMenuItem>
+          <ContextMenuItem className="cursor-pointer text-zinc-500 hover:text-red-500" onClick={() => deleteFromTimeline(action.id, MediaTypes.VIDEO)}>Delete clip</ContextMenuItem>
           {/* <ContextMenuItem>Billing</ContextMenuItem>
           <ContextMenuItem>Team</ContextMenuItem>
           <ContextMenuItem>Subscription</ContextMenuItem> */}
