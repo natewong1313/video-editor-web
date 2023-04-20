@@ -7,20 +7,19 @@ import path from "path"
 // export const config = { runtime: "edge" }
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
-const ffmpeg = createFFmpeg({
-  // log: true
-  corePath: path.resolve(process.cwd(), "app", "static", "js", "ffmpeg-core.js"),
-});
-
 export const action = async ({ request }: ActionArgs) => {
   // const { url } = await request.json()
   console.log("OK")
-  console.log(path.resolve(process.cwd(), "app", "static", "js", "ffmpeg-core.js"))
+  // console.log(path.resolve(process.cwd(), "app", "static", "js", "ffmpeg-core.js"))
+  // const ffmpeg = createFFmpeg({
+  //   log: true,
+  //   corePath: "https://ffmpeg-online.vercel.app/static/v0.11.0/ffmpeg-core.js"
+  // });
 
-  try {
-    await ffmpeg.load()
-  } catch (error) {
-    console.log(error)
-  }
+  // try {
+  //   await ffmpeg.load()
+  // } catch (error) {
+  //   console.log(error)
+  // }
   return json({ success: true })
 }

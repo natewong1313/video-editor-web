@@ -13,20 +13,6 @@ const mediaTypesObj = {
 }
 
 export async function createMediaArray(files: FileObject[], mediaUrls: { [key: string]: string }, currentUrl: string) {
-  // const mediaArray = files.map(async (file) => {
-  //   const type = getMediaType(file.name)
-  //   const media = {
-  //     pathName: file.name,
-  //     storageId: file.id,
-  //     url: mediaUrls[file.name],
-  //     type,
-  //   }
-  //   if (type === MediaTypes.VIDEO) {
-  //     const duration = await getVideoDurationInSeconds(media.url)
-  //     console.log(duration)
-  //   }
-  //   return media
-  // })
   const mediaArray: Media[] = []
   for (const file of files) {
     const type = getMediaType(file.name)
@@ -84,6 +70,11 @@ export function getMediaType(fileName: string) {
   throw new Error("Unknown media type")
 }
 
-// export function buildFileUrl(fileName: string) {
-
-// }
+export function getMediaUrl(fileName: string, media: Media[]) {
+  for (const m of media) {
+    if (m.pathName === fileName) {
+      return m.url
+    }
+  }
+  return null
+}

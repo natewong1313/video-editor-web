@@ -5,6 +5,7 @@ import VideoClip from "@/components/project/timeline/video-clip"
 import type { Media } from "@/lib/media.types"
 import { MediaTypes } from "@/lib/media.types"
 import type { Database } from "@/lib/database.types"
+import { getMediaUrl } from "@/utils/media"
 import { getAuthenticatedUser, getMediaFromStorage, getProjectFromDb, updateProjectTimelineInDb } from "@/utils/supabase"
 import { getEndTime, getClipPath } from "@/utils/timeline"
 import type { V2_MetaFunction } from "@remix-run/react"
@@ -17,6 +18,8 @@ import { useRef, useState } from "react"
 import { useDurationsStore } from "@/hooks/use-durations-store"
 import { useTimelineStore } from "@/hooks/use-timeline-store"
 import type { SupabaseClient } from "@supabase/auth-helpers-remix"
+import ExportModal from "@/components/project/export-modal"
+import { ExportData } from "@/lib/export.types"
 
 export const mockData: TimelineRow[] = [
   {
@@ -74,7 +77,7 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 export default function Project() {
   const { project, media, userId } = useLoaderData<typeof loader>()
   const [timelineData, setTimelineData] = useState<TimelineRow[]>(project.timeline_json ? JSON.parse(project.timeline_json) : mockData)
-  const { supabase } = useOutletContext<{ supabase: SupabaseClient<Database> }>()
+  const { supabase, currentUrl } = useOutletContext<{ supabase: SupabaseClient<Database>, currentUrl: string }>()
   const timelineState = useRef<TimelineState>()
   const durations = useDurationsStore((state) => state.durations)
   const [currentClipId, updateCurrentClip] = useTimelineStore((state) => [state.currentClipId, state.updateCurrentClip])
@@ -174,18 +177,47 @@ export default function Project() {
       }
     },
   }
+  const [exportUrl, setExportUrl] = useState("")
+  const [exportModalOpen, setExportModalOpen] = useState(false)
+  const [progress, setProgress] = useState(5)
+
   const onExportBtnPress = async () => {
-    await fetch("/api/export", {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        "url": "test"
+    if (timelineData[0].actions.length < 1) {
+      return
+    }
+    setExportModalOpen(true)
+    // console.log(JSON.stringify(timelineData))
+    const exportData: ExportData[] = []
+    for (const action of timelineData[0].actions) {
+      exportData.push({
+        fileName: action.id,
+        url: getMediaUrl(action.id, media) as string,
+        start: action.start,
+        end: action.end
       })
-    })
+    }
+    console.log(JSON.stringify(exportData))
+    try {
+      const res = await fetch("https://k4glrcxzizidezq74q2ufbsrva0xzkqd.lambda-url.us-east-1.on.aws/", {
+        method: 'post',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+          'Origin': currentUrl
+        },
+        body: JSON.stringify(exportData)
+      })
+      const body = await res.json()
+      setExportUrl(body.url)
+      setProgress(100)
+    } catch (error) {
+      console.log(error)
+    }
   }
   // const
   return (
     <div className="h-full bg-zinc-950/95">
+      <ExportModal isOpen={exportModalOpen} setIsOpen={setExportModalOpen} progress={progress} setProgress={setProgress} exportUrl={exportUrl} />
       <div className="flex h-full flex-col">
         <Navbar projectName={project.name} onExportBtnPress={onExportBtnPress} />
         <div className="h-full w-full flex-1 overflow-hidden">
@@ -223,15 +255,6 @@ export default function Project() {
           />
         </div>
       </div>
-      {/* <div className="flex h-full space-x-1">
-        <div>
-          <MediaLibrary />
-        </div>
-        <div className="flex flex-1 flex-col space-y-1">
-          <div className="flex-1">media player</div>
-          timeline
-        </div>
-      </div> */}
     </div>
   )
 }
