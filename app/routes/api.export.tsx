@@ -8,8 +8,8 @@ import path from "path"
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 
 const ffmpeg = createFFmpeg({
-  log: true
-  // corePath: path.resolve(process.cwd(), "app", "static", "js", "ffmpeg-core.js"),
+  // log: true
+  corePath: path.resolve(process.cwd(), "app", "static", "js", "ffmpeg-core.js"),
 });
 
 export const action = async ({ request }: ActionArgs) => {
