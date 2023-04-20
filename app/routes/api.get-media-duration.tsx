@@ -2,7 +2,7 @@ import type { ActionArgs } from "@vercel/remix"
 import { json } from "@vercel/remix"
 import { getVideoDurationInSeconds } from "get-video-duration"
 
-export const config = { runtime: "edge" }
+// export const config = { runtime: "edge" }
 export const action = async ({ request }: ActionArgs) => {
   if (request.method !== "POST") {
     return json({ message: "Method not allowed" }, 405)
