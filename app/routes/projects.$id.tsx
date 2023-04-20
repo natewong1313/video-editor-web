@@ -76,7 +76,8 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 
 export default function Project() {
   const { project, media, userId } = useLoaderData<typeof loader>()
-  const [timelineData, setTimelineData] = useState<TimelineRow[]>(project.timeline_json ? JSON.parse(project.timeline_json) : mockData)
+  const [timelineData, setTimelineData] = useState<TimelineRow[]>(mockData)
+  // const [timelineData, setTimelineData] = useState<TimelineRow[]>(project.timeline_json ? JSON.parse(project.timeline_json) : mockData)
   const { supabase, currentUrl } = useOutletContext<{ supabase: SupabaseClient<Database>, currentUrl: string }>()
   const timelineState = useRef<TimelineState>()
   const durations = useDurationsStore((state) => state.durations)
@@ -111,10 +112,10 @@ export default function Project() {
       [media.pathName]: mediaOccurences[media.pathName] + 1,
     })
     setTimelineData(newTimelineData)
-    const { error } = await updateProjectTimelineInDb(supabase, project.id, timelineData)
-    if (error) {
-      console.log(error)
-    }
+    // const { error } = await updateProjectTimelineInDb(supabase, project.id, timelineData)
+    // if (error) {
+    //   console.log(error)
+    // }
   }
   const splitClip = (clipId: string) => {
     // let clipIndex = 0
@@ -141,10 +142,10 @@ export default function Project() {
         updateCurrentClip("", "")
       }
     }
-    const { error } = await updateProjectTimelineInDb(supabase, project.id, timelineData)
-    if (error) {
-      console.log(error)
-    }
+    // const { error } = await updateProjectTimelineInDb(supabase, project.id, timelineData)
+    // if (error) {
+    //   console.log(error)
+    // }
   }
 
   const effects: Record<string, TimelineEffect> = {
@@ -208,7 +209,9 @@ export default function Project() {
         body: JSON.stringify(exportData)
       })
       const body = await res.json()
+      console.log(body.url)
       setExportUrl(body.url)
+      // setExportUrl("https://vid-editor-exports.s3.amazonaws.com/4534e3e7-794d-4114-8bb9-d2dd9d35512a.mp4")
       setProgress(100)
     } catch (error) {
       console.log(error)
@@ -239,7 +242,7 @@ export default function Project() {
             style={{ width: "100%", height: "19.9rem", backgroundColor: "rgb(9 9 11)" }}
             onChange={(editorData: TimelineRow[]) => {
               setTimelineData(editorData)
-              updateProjectTimelineInDb(supabase, project.id, timelineData)
+              {/* updateProjectTimelineInDb(supabase, project.id, timelineData) */ }
             }}
             ref={timelineState as React.MutableRefObject<TimelineState>}
             editorData={timelineData}

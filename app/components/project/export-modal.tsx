@@ -58,15 +58,6 @@ export default function CreateProjectModal(props: Props) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-400/20 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
-                  <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
-                    <RAButton
-                      type="button"
-                      className="rounded-full text-zinc-500 data-[hovered]:text-white focus:outline-none focus:ring-0"
-                      onPress={closeModal}
-                    >
-                      <X className="h-7 w-7" />
-                    </RAButton>
-                  </div>
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sky-700/50">
                     <Film className="text-sky-500" />
                   </div>
@@ -74,15 +65,21 @@ export default function CreateProjectModal(props: Props) {
                     <Dialog.Title as="h1" className="text-base font-medium leading-6 text-white">
                       Exporting Project
                     </Dialog.Title>
-                    <p className="text-sm mt-1 text-gray-500">Your project is beginning the rendering process. Don't close out of this page.</p>
                     {props.exportUrl === "" ?
-                      <div className="flex justify-center mt-4">
-                        <Progress value={props.progress} className="w-[60%]" />
-                      </div>
+                      <>
+                        <p className="text-sm mt-1 text-gray-500">Your project is beginning the rendering process. Don't close out of this page.</p>
+                        <div className="flex justify-center mt-4">
+                          <Progress value={props.progress} className="w-[60%]" />
+                        </div>
+                      </>
                       :
-                      <Button className="w-full h-12" onPress={() => window?.open(props.exportUrl, '_blank')?.focus()}>
-                        Download
-                      </Button>
+                      <>
+                        <p className="text-sm mt-1 text-gray-500">Your project is ready to be viewed! Congrats</p>
+                        <Button className="w-full h-12 mt-4" onPress={() => window?.open(props.exportUrl, '_blank')?.focus()}>
+                          Download
+                        </Button>
+                      </>
+
                     }
                   </div>
                 </div>
