@@ -23,18 +23,18 @@ export const mockData: TimelineRow[] = [
   {
     id: "0",
     actions: [
-      {
-        id: "action0",
-        start: 0,
-        end: 3,
-        effectId: "video",
-      },
-      {
-        id: "action1",
-        start: 3,
-        end: 5,
-        effectId: "video",
-      },
+      // {
+      //   id: "action0",
+      //   start: 0,
+      //   end: 3,
+      //   effectId: "video",
+      // },
+      // {
+      //   id: "action1",
+      //   start: 3,
+      //   end: 5,
+      //   effectId: "video",
+      // },
     ],
   },
 ]
@@ -71,20 +71,30 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 export default function Project() {
   const { project, media } = useLoaderData<typeof loader>()
   const [timelineData, setTimelineData] = useState(mockData)
-  const [videoRowEndTime, setVideoRowEndTime] = useState(getEndTime(timelineData[0].actions))
-  // useEffect(() => {
-  //   // console.log(getEndTime(timelineData[0].actions))
-  //   console.log(endTime)
-  // }, [endTime])
+  // for keeping track of how many times the same clip is in the timeline
+  const [mediaOccurences, setMediaOccurences] = useState(
+    media.reduce((acc, curr) => {
+      acc[curr.pathName] = 0
+      return acc
+    }, {} as Record<string, number>),
+  )
   const addMediaToTimeline = (media: Media) => {
     const newTimelineData = [...timelineData]
+    const videoRowEndTime = getEndTime(timelineData[0].actions)
+    let clipName = media.pathName
+    if (mediaOccurences[media.pathName] > 0) {
+      clipName = `${media.pathName} (${mediaOccurences[media.pathName]})`
+    }
     newTimelineData[0].actions.push({
-      id: `action${newTimelineData[0].actions.length}`,
+      id: clipName,
       start: videoRowEndTime,
       end: videoRowEndTime + 3,
       effectId: "video",
     })
-    console.log(newTimelineData)
+    setMediaOccurences({
+      ...mediaOccurences,
+      [media.pathName]: mediaOccurences[media.pathName] + 1,
+    })
     setTimelineData(newTimelineData)
   }
   return (
@@ -99,7 +109,7 @@ export default function Project() {
             style={{ width: "100%", height: "19.9rem", backgroundColor: "rgb(9 9 11)" }}
             onChange={(editorData: TimelineRow[]) => {
               // console.log(editorData)
-              setVideoRowEndTime(getEndTime(editorData[0].actions))
+              // setVideoRowEndTime(getEndTime(editorData[0].actions))
               setTimelineData(editorData)
             }}
             editorData={timelineData}
