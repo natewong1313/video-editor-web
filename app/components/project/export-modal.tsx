@@ -1,9 +1,10 @@
 import { Dialog, Transition } from "@headlessui/react"
-import { PlusSquare, X, Film } from "lucide-react"
-import { Fragment, useState, useEffect } from "react"
+import { X, Film } from "lucide-react"
+import { Fragment, useEffect } from "react"
 import { Button as RAButton } from "react-aria-components"
 import { Progress } from "@/components/ui/ProgressBar"
 import Button from "@/components/ui/Button"
+import { cn } from "@/utils/cn"
 
 type Props = {
   isOpen: boolean
@@ -58,6 +59,15 @@ export default function CreateProjectModal(props: Props) {
             >
               <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-zinc-900 ring-1 ring-zinc-400/20 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-sm sm:p-6">
                 <div>
+                  {props.exportUrl !== "" ? <div className="absolute right-0 top-0 hidden pr-4 pt-4 sm:block">
+                    <RAButton
+                      type="button"
+                      className="rounded-full text-zinc-500 data-[hovered]:text-white focus:outline-none focus:ring-0"
+                      onPress={closeModal}
+                    >
+                      <X className="h-7 w-7" />
+                    </RAButton>
+                  </div> : null}
                   <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-sky-700/50">
                     <Film className="text-sky-500" />
                   </div>

@@ -78,3 +78,12 @@ export function getMediaUrl(fileName: string, media: Media[]) {
   }
   return null
 }
+
+export function getMedia(srcUrl: string, media: Media[]) {
+  for (const m of media) {
+    if (m.url === srcUrl) {
+      return m
+    }
+  }
+  return null
+}

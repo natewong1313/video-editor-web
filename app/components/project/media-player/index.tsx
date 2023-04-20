@@ -5,6 +5,7 @@ import { Button } from "react-aria-components"
 import { useTimelineStore } from "@/hooks/use-timeline-store"
 import ReactPlayer from 'react-player'
 import { Media } from "@/lib/media.types"
+import { getMedia } from "@/utils/media"
 
 type Props = {
   timelineState: React.MutableRefObject<TimelineState>
@@ -15,7 +16,7 @@ export default function MediaPlayer({ timelineState, media, endTime }: Props) {
   const videoPlayerRef = useRef<ReactPlayer>(null)
   const [currentClipPath] = useTimelineStore((state) => [state.currentClipPath])
   const [clipUrl, setClipUrl] = useState("")
-  // console.log("Current clip:", currentClipPath, clipUrl)
+  // const durations = useDurationsStore((state) => state.durations)
   useEffect(() => {
     if (currentClipPath !== "") {
       for (const m of media) {
@@ -36,12 +37,20 @@ export default function MediaPlayer({ timelineState, media, endTime }: Props) {
     const engine = timelineState.current
     engine.listener.on("play", () => {
       setIsPlaying(true)
-      // videoPlayerRef.pl
     })
     engine.listener.on("paused", () => setIsPlaying(false))
-    engine.listener.on('afterSetTime', ({ time }) => {
+    engine.listener.on('afterSetTime', ({ time, engine }) => {
       setTime(time)
-      videoPlayerRef.current?.seekTo(time, 'seconds')
+      // const m = getMedia(currentClipPath, media)
+      let scrubTime = time
+      // console.log("clip duration", videoPlayerRef.current?.getDuration())
+      // if (scrubTime > (videoPlayerRef.current?.getDuration() || 0)) {
+      //   scrubTime = scrubTime - (videoPlayerRef.current?.getDuration() || 0)
+      // }
+
+      // const m = getMedia(videoPlayerRef.current?.getInternalPlayer().src, media)
+      // console.log(m.)
+      videoPlayerRef.current?.seekTo(scrubTime, 'seconds')
     });
     engine.listener.on('setTimeByTick', ({ time }) => {
       setTime(time)
