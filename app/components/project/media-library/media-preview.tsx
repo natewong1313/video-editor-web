@@ -1,15 +1,17 @@
+import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/ContextMenu"
 import type { Media } from "@/lib/media.types"
 import { MediaTypes } from "@/lib/media.types"
 import { getMediaType } from "@/utils/media"
 import { useState } from "react"
-import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/ContextMenu"
 import VideoPreview from "./video-preview"
 type Props = {
   media: Media
   addMediaToTimeline: (media: Media) => void
+  mediaDurations: Record<string, number>
+  setMediaDurations: (durations: Record<string, number>) => void
 }
 
-export default function MediaPreview({ media, addMediaToTimeline }: Props) {
+export default function MediaPreview({ media, addMediaToTimeline, mediaDurations, setMediaDurations }: Props) {
   const [isHovering, setIsHovering] = useState(false)
   return (
     <ContextMenu>
@@ -17,12 +19,18 @@ export default function MediaPreview({ media, addMediaToTimeline }: Props) {
         <div
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
-          className="group flex w-[6.6rem] cursor-pointer flex-col overflow-hidden"
+          className="group flex w-[6.5rem] cursor-pointer flex-col overflow-hidden"
           onClick={() => addMediaToTimeline(media)}
         >
-          <div className="flex h-[6.6rem] w-[6.6rem] items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 group-hover:border-sky-500">
+          <div className="flex h-[6.5rem] w-[6.5rem] items-center justify-center rounded-md border border-zinc-800 bg-zinc-900 group-hover:border-sky-500">
             {getMediaType(media.pathName) === MediaTypes.VIDEO ? (
-              <VideoPreview src={media.url} isHovering={isHovering} />
+              <VideoPreview
+                pathName={media.pathName}
+                src={media.url}
+                isHovering={isHovering}
+                mediaDurations={mediaDurations}
+                setMediaDurations={setMediaDurations}
+              />
             ) : null}
             {getMediaType(media.pathName) === MediaTypes.IMAGE ? (
               <img src={media.url} alt={media.pathName} className="" />
@@ -32,12 +40,19 @@ export default function MediaPreview({ media, addMediaToTimeline }: Props) {
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent>
-      <ContextMenuItem className="cursor-pointer text-zinc-300 hover:text-sky-500"  onClick={() => window.open(media.url, "_blank", "location=yes,height=570,width=520,scrollbars=yes,status=yes")}>Open in new window</ContextMenuItem>
+        <ContextMenuItem
+          className="cursor-pointer text-zinc-300 hover:text-sky-500"
+          onClick={() =>
+            window.open(media.url, "_blank", "location=yes,height=570,width=520,scrollbars=yes,status=yes")
+          }
+        >
+          Open in new window
+        </ContextMenuItem>
         <ContextMenuItem className="cursor-pointer text-zinc-300 hover:text-red-500">Delete</ContextMenuItem>
         {/* <ContextMenuItem>Billing</ContextMenuItem>
         <ContextMenuItem>Team</ContextMenuItem>
         <ContextMenuItem>Subscription</ContextMenuItem> */}
       </ContextMenuContent>
-  </ContextMenu>
+    </ContextMenu>
   )
 }

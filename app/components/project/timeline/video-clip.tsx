@@ -1,6 +1,7 @@
 import { ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger } from "@/components/ui/ContextMenu"
 import type { TimelineAction, TimelineRow } from "@xzdarcy/react-timeline-editor"
 import { MediaTypes } from "@/lib/media.types"
+import {getClipPath} from "@/utils/timeline"
 
 type Props = {
   action: TimelineAction
@@ -8,6 +9,8 @@ type Props = {
   deleteFromTimeline: (clipId: string, mediaType: MediaTypes) => void
 }
 export default function VideoClip({ action, row, deleteFromTimeline }: Props) {
+  const pathName = getClipPath(action.id)
+  console.log(pathName)
   return (
     <>
       <ContextMenu>

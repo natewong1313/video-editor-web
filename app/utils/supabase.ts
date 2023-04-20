@@ -54,6 +54,7 @@ export async function getMediaFromStorage(supabaseClient: SupabaseClient, projec
   const filteredFiles: FileObject[] = []
   // get rid of item in data
   for (const media of data) {
+    console.log(media)
     if (media.name !== ".emptyFolderPlaceholder") {
       filteredFiles.push(media)
     }

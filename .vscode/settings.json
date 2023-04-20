@@ -2,7 +2,8 @@
   "typescript.tsdk": "node_modules\\typescript\\lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.autoSave": "off",
-  "editor.formatOnSave": false
+  "workbench.editor.enablePreview": true
+  // "editor.formatOnSave": false
   // "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   // "editor.codeActionsOnSave": {
   //   "source.fixAll.eslint": true

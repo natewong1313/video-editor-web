@@ -1,4 +1,5 @@
 import MediaLibrary from "@/components/project/media-library"
+import MediaPlayer from "@/components/project/media-player"
 import Navbar from "@/components/project/navbar"
 import VideoClip from "@/components/project/timeline/video-clip"
 import type { Media } from "@/lib/media.types"
@@ -9,9 +10,9 @@ import type { V2_MetaFunction } from "@remix-run/react"
 import { useLoaderData } from "@remix-run/react"
 import type { LoaderArgs } from "@vercel/remix"
 import { json, redirect } from "@vercel/remix"
-import type { TimelineEffect, TimelineRow } from "@xzdarcy/react-timeline-editor"
+import type { TimelineEffect, TimelineRow, TimelineState } from "@xzdarcy/react-timeline-editor"
 import { Timeline } from "@xzdarcy/react-timeline-editor"
-import { useState } from "react"
+import { useRef, useState } from "react"
 
 export const mockEffect: Record<string, TimelineEffect> = {
   video: {
@@ -73,8 +74,15 @@ export const meta: V2_MetaFunction<typeof loader> = ({ data }) => {
 export default function Project() {
   const { project, media } = useLoaderData<typeof loader>()
   const [timelineData, setTimelineData] = useState(mockData)
+  const timelineState = useRef<TimelineState>()
   // for keeping track of how many times the same clip is in the timeline
   const [mediaOccurences, setMediaOccurences] = useState(
+    media.reduce((acc, curr) => {
+      acc[curr.pathName] = 0
+      return acc
+    }, {} as Record<string, number>),
+  )
+  const [mediaDurations, setMediaDurations] = useState(
     media.reduce((acc, curr) => {
       acc[curr.pathName] = 0
       return acc
@@ -90,10 +98,11 @@ export default function Project() {
     if (mediaOccurences[media.pathName] > 0) {
       clipName = `${media.pathName} (${mediaOccurences[media.pathName]})`
     }
+    // let duration = mediaDurations[media.pathName]
     newTimelineData[0].actions.push({
       id: clipName,
       start: videoRowEndTime,
-      end: videoRowEndTime + (media.duration || 5),
+      end: videoRowEndTime + mediaDurations[media.pathName],
       effectId: "video",
     })
     setMediaOccurences({
@@ -112,12 +121,32 @@ export default function Project() {
       setTimelineData(newTimelineData)
     }
   }
+  console.log(mediaDurations)
   return (
     <div className="h-full bg-zinc-950/95">
       <div className="flex h-full flex-col">
         <Navbar projectName={project.name} />
-        <div className="h-full flex-1 flex-col overflow-hidden">
-          <MediaLibrary projectId={project.id} media={media} addMediaToTimeline={addMediaToTimeline} />
+        {/* <div className="h-full w-full flex-1 overflow-hidden">
+          <MediaLibrary
+            projectId={project.id}
+            media={media}
+            addMediaToTimeline={addMediaToTimeline}
+            mediaDurations={mediaDurations}
+            setMediaDurations={setMediaDurations}
+          />
+          <MediaPlayer timelineState={timelineState as React.MutableRefObject<TimelineState>} />
+        </div> */}
+        <div className="h-full w-full flex-1 overflow-hidden">
+          <div className="flex h-full w-full">
+            <MediaLibrary
+              projectId={project.id}
+              media={media}
+              addMediaToTimeline={addMediaToTimeline}
+              mediaDurations={mediaDurations}
+              setMediaDurations={setMediaDurations}
+            />
+            <MediaPlayer timelineState={timelineState as React.MutableRefObject<TimelineState>} />
+          </div>
         </div>
         <div className="h-[20rem] border-t border-zinc-700">
           <Timeline
@@ -127,6 +156,7 @@ export default function Project() {
               // setVideoRowEndTime(getEndTime(editorData[0].actions))
               setTimelineData(editorData)
             }}
+            ref={timelineState as React.MutableRefObject<TimelineState>}
             editorData={timelineData}
             effects={mockEffect}
             autoScroll={true}

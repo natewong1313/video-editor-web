@@ -1,8 +1,9 @@
 import TextField from "@/components/ui/TextField"
 import type { Database } from "@/lib/database.types"
 import type { Media } from "@/lib/media.types"
+import { MediaTypes } from "@/lib/media.types"
 import { cn } from "@/utils/cn"
-import { mediaValidator } from "@/utils/media"
+import { getMediaType, mediaValidator } from "@/utils/media"
 import { getMediaFromStorage } from "@/utils/supabase"
 import { useNavigate, useOutletContext } from "@remix-run/react"
 import type { SupabaseClient } from "@supabase/auth-helpers-remix"
@@ -17,9 +18,17 @@ type Props = {
   projectId: string
   media: Media[]
   addMediaToTimeline: (media: Media) => void
+  mediaDurations: Record<string, number>
+  setMediaDurations: (durations: Record<string, number>) => void
 }
 
-export default function MediaLibrary({ projectId, media, addMediaToTimeline }: Props) {
+export default function MediaLibrary({
+  projectId,
+  media,
+  addMediaToTimeline,
+  mediaDurations,
+  setMediaDurations,
+}: Props) {
   const navigate = useNavigate()
   const containerRef = useRef<HTMLDivElement>(null)
   const [offsetHeight, setOffsetHeight] = useState(0)
@@ -51,7 +60,6 @@ export default function MediaLibrary({ projectId, media, addMediaToTimeline }: P
         console.error(error)
         continue
       }
-      console.log(data.path)
       filesAdded++
     }
     setStatusBarMsg("")
@@ -77,7 +85,7 @@ export default function MediaLibrary({ projectId, media, addMediaToTimeline }: P
   return (
     <div
       className={cn(
-        "flex h-full w-96 flex-col overflow-auto border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
+        "flex h-full w-[30.05rem] flex-col overflow-auto border border-r border-transparent border-r-zinc-700 bg-zinc-950/95 px-6 py-4",
         isDragActive ? "border border-dashed border-sky-500" : null,
       )}
       {...getRootProps()}
@@ -93,9 +101,15 @@ export default function MediaLibrary({ projectId, media, addMediaToTimeline }: P
       <TextField className={cn("mt-1", showSearchInput ? null : "hidden")} placeholder="Search for media..." />
       <div className="mt-4">
         {hasMedia ? (
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-3">
             {projectMedia.map((media) => (
-              <MediaPreview key={media.storageId} media={media} addMediaToTimeline={addMediaToTimeline} />
+              <MediaPreview
+                key={media.storageId}
+                media={media}
+                addMediaToTimeline={addMediaToTimeline}
+                mediaDurations={mediaDurations}
+                setMediaDurations={setMediaDurations}
+              />
             ))}
           </div>
         ) : (
