@@ -1,13 +1,13 @@
-import type { V2_MetaFunction } from "@remix-run/cloudflare";
+import type { V2_MetaFunction } from "@remix-run/cloudflare"
 
 export const meta: V2_MetaFunction = () => {
-  return [{ title: "Video Editor" }];
-};
+  return [{ title: "Video Editor" }]
+}
 
 export default function Index() {
   return (
-    <div style={{ fontFamily: "system-ui, sans-serif", lineHeight: "1.4" }}>
+    <div className="underline">
       <h1>Welcome to Video Editor</h1>
     </div>
-  );
+  )
 }

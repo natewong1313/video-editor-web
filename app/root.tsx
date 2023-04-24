@@ -5,7 +5,13 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
+} from "@remix-run/react"
+import type { LinksFunction } from "@remix-run/cloudflare"
+import stylesheetUrl from "@/static/styles/index.css"
+
+export const links: LinksFunction = () => {
+  return [{ rel: "stylesheet", href: stylesheetUrl }]
+}
 
 export default function App() {
   return (
@@ -23,5 +29,5 @@ export default function App() {
         <LiveReload />
       </body>
     </html>
-  );
+  )
 }
