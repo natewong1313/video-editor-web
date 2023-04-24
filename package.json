@@ -9,9 +9,9 @@
     "start": "cross-env NODE_ENV=production npm run wrangler",
     "typecheck": "tsc",
     "wrangler": "wrangler pages dev ./public",
-    "lint": "eslint ./src",
-    "lint:debug": "eslint ./src --debug",
-    "lint:fix": "eslint ./src --fix"
+    "lint": "eslint ./app",
+    "lint:debug": "eslint ./app --debug",
+    "lint:fix": "eslint ./app --fix"
   },
   "dependencies": {
     "@remix-run/cloudflare": "^1.15.0",
