@@ -1,10 +1,12 @@
 import type { LoaderArgs } from "@remix-run/cloudflare"
 
 export const loader = async ({context}: LoaderArgs) => {
-  const res = await context.USERS_KV.get<{passwordHash: string}>("test@gmail.com", {
-    type: "json",
-  })
-  console.log(res)
+  // console.log(JSON.stringify(context))
+  // // const res = await context.USERS_KV.put("natewong1@gmail.com", JSON.stringify({"passwordHash": "123"}))
+  // const res = await context.USERS_KV.get<{passwordHash: string}>("natewong1@gmail.com", {
+  //   type: "json",
+  // })
+  // console.log(res)
   return null
 }
 

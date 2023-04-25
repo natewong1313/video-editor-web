@@ -1,3 +1,3 @@
-interface Env {
+export interface Env {
     USERS_KV: KVNamespace;
 }
