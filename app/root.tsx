@@ -22,7 +22,7 @@ export default function App() {
         <Meta />
         <Links />
       </head>
-      <body className="font-chivo-mono">
+      <body className="h-screen font-chivo-mono">
         <Outlet />
         <ScrollRestoration />
         <Scripts />

@@ -6,8 +6,8 @@ export const meta: V2_MetaFunction = () => {
 
 export default function Index() {
   return (
-    <div className="underline">
-      <h1>Welcome to Video Editor</h1>
+    <div className="h-full bg-zinc-900">
+      <h1 className="text-white">Welcome to Video Editor</h1>
     </div>
   )
 }
