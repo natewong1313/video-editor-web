@@ -3,7 +3,9 @@
   "typescript.enablePromptUseWorkspaceTsdk": true,
   "files.autoSave": "off",
   "workbench.editor.enablePreview": true,
+  "eslint.format.enable": true,
   "editor.formatOnSave": false,
+  "eslint.validate": [ "javascript", "javascriptreact", "html", "typescriptreact" ],
   "editor.defaultFormatter": "dbaeumer.vscode-eslint",
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": true
